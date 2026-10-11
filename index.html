@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0d12" />
+<title>Lumen Studio — Free Image Generator</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-2: #10131b;
+    --panel: rgba(255,255,255,.045);
+    --panel-2: rgba(255,255,255,.07);
+    --stroke: rgba(255,255,255,.10);
+    --stroke-2: rgba(255,255,255,.16);
+    --text: #eef1f7;
+    --text-dim: #9aa2b2;
+    --sunburst: #ffb43a;
+    --flare: #ff5f6d;
+    --accent: #7c5cff;
+    --ok: #35d08a;
+    --err: #ff5f6d;
+    --radius: 18px;
+    --radius-sm: 12px;
+    --shadow: 0 20px 50px rgba(0,0,0,.45);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; min-height:100dvh; }
+  body { background:
+      radial-gradient(1200px 700px at 85% -10%, rgba(124,92,255,.20), transparent 60%),
+      radial-gradient(900px 600px at -10% 10%, rgba(255,95,109,.14), transparent 55%),
+      radial-gradient(900px 700px at 50% 115%, rgba(255,180,58,.10), transparent 60%),
+      var(--bg);
+    background-attachment: fixed; }
+
+  .shell { max-width:680px; margin:0 auto; padding:16px 16px calc(28px + var(--safe-b));
+    display:flex; flex-direction:column; gap:16px; min-height:100dvh; }
+
+  header { display:flex; align-items:center; gap:12px; padding:6px 2px 0; }
+  .brand-mark { width:44px; height:44px; flex:none; border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--flare));
+    display:grid; place-items:center; box-shadow:0 8px 24px rgba(124,92,255,.35); }
+  .brand-mark svg { width:24px; height:24px; }
+  .brand-text h1 { font-size:18px; margin:0; font-weight:800; letter-spacing:-.02em; }
+  .brand-text p { margin:2px 0 0; font-size:12px; color:var(--text-dim); }
+  .free-badge { margin-left:auto; font-size:11px; font-weight:700; padding:6px 10px;
+    border-radius:999px; color:#0b0d12; background:linear-gradient(135deg,var(--sunburst),#ffd47a);
+    box-shadow:0 6px 16px rgba(255,180,58,.3); white-space:nowrap; }
+
+  /* Connect bar */
+  .connect-bar { display:flex; align-items:center; gap:12px; padding:13px 16px;
+    background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(255,95,109,.12));
+    border:1px solid rgba(124,92,255,.35); border-radius:var(--radius);
+    box-shadow:var(--shadow); }
+  .connect-bar.hidden { display:none; }
+  .connect-bar .c-icon { font-size:22px; }
+  .connect-bar .c-text { flex:1; font-size:13px; line-height:1.4; color:var(--text); }
+  .connect-bar .c-text b { color:#c9b8ff; }
+  .connect-btn { flex:none; padding:10px 14px; border:none; border-radius:12px;
+    font-family:inherit; font-size:13px; font-weight:800; color:#0b0d12; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),#9d7bff);
+    box-shadow:0 8px 20px rgba(124,92,255,.35); transition:transform .12s; }
+  .connect-btn:active { transform:scale(.96); }
+
+  .model-toggle { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:6px;
+    background:var(--panel); border:1px solid var(--stroke); border-radius:var(--radius);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  .model-btn { position:relative; display:flex; flex-direction:column; gap:3px; padding:13px 14px;
+    border-radius:var(--radius-sm); border:1px solid transparent; background:transparent;
+    color:var(--text-dim); text-align:left; cursor:pointer; transition:all .22s ease; font-family:inherit; }
+  .model-btn .m-name { font-size:14px; font-weight:700; letter-spacing:-.01em; color:inherit; }
+  .model-btn .m-desc { font-size:11.5px; line-height:1.35; opacity:.75; }
+  .model-btn .dot { position:absolute; top:12px; right:12px; width:10px; height:10px;
+    border-radius:50%; background:currentColor; opacity:.35; }
+  .model-btn.active { background:var(--panel-2); border-color:var(--stroke-2); color:var(--text); }
+  .model-btn.sunburst.active { box-shadow:inset 0 0 0 1px rgba(255,180,58,.55); }
+  .model-btn.sunburst.active .dot { background:var(--sunburst); opacity:1; box-shadow:0 0 10px var(--sunburst); }
+  .model-btn.flare.active { box-shadow:inset 0 0 0 1px rgba(255,95,109,.55); }
+  .model-btn.flare.active .dot { background:var(--flare); opacity:1; box-shadow:0 0 10px var(--flare); }
+
+  .card { background:var(--panel); border:1px solid var(--stroke); border-radius:var(--radius);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:var(--shadow); overflow:hidden; }
+  .prompt-wrap { padding:16px; }
+  .field-label { display:flex; align-items:center; justify-content:space-between; font-size:12px;
+    font-weight:700; letter-spacing:.04em; color:var(--text-dim); text-transform:uppercase; margin-bottom:10px; }
+  .field-label .count { font-weight:600; opacity:.7; }
+  textarea#prompt { width:100%; min-height:96px; resize:vertical; background:var(--bg-2);
+    border:1px solid var(--stroke); border-radius:var(--radius-sm); color:var(--text);
+    font-family:inherit; font-size:15px; line-height:1.5; padding:13px 14px; outline:none;
+    transition:border-color .2s, box-shadow .2s; }
+  textarea#prompt:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,92,255,.22); }
+  textarea#prompt::placeholder { color:#6b7280; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .chip { font-size:12.5px; font-weight:600; color:var(--text-dim); background:var(--panel-2);
+    border:1px solid var(--stroke); padding:7px 12px; border-radius:999px; cursor:pointer; transition:all .18s; }
+  .chip:active { transform:scale(.96); }
+  .chip:hover { color:var(--text); border-color:var(--stroke-2); }
+
+  .options { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:4px 16px 16px; }
+  .opt-group { display:flex; flex-direction:column; gap:7px; }
+  .opt-label { font-size:11px; font-weight:700; letter-spacing:.04em; color:var(--text-dim); text-transform:uppercase; }
+  .seg { display:flex; gap:3px; padding:3px; background:var(--bg-2); border:1px solid var(--stroke); border-radius:12px; }
+  .seg button { flex:1; padding:9px 4px; font-size:12.5px; font-weight:700; background:transparent;
+    color:var(--text-dim); border:none; border-radius:9px; cursor:pointer; font-family:inherit; transition:all .18s; white-space:nowrap; }
+  .seg button.on { background:var(--panel-2); color:var(--text); box-shadow:inset 0 0 0 1px var(--stroke-2); }
+
+  .gen-area { padding:0 16px 16px; }
+  .gen-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:16px;
+    border:none; border-radius:var(--radius); font-family:inherit; font-size:16px; font-weight:800;
+    letter-spacing:.01em; color:#0b0d12; cursor:pointer;
+    background:linear-gradient(135deg,var(--sunburst),#ffd47a);
+    box-shadow:0 12px 30px rgba(255,180,58,.35); transition:transform .12s, box-shadow .2s, opacity .2s; }
+  .gen-btn:active { transform:scale(.985); }
+  .gen-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
+  .gen-btn svg { width:20px; height:20px; }
+
+  #status { display:none; align-items:center; gap:12px; padding:14px 16px; font-size:13.5px; color:var(--text-dim); }
+  #status.show { display:flex; }
+  .spinner { width:22px; height:22px; flex:none; border-radius:50%;
+    border:3px solid rgba(255,255,255,.12); border-top-color:var(--accent); animation:spin .8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .gallery { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (min-width:560px){ .gallery { grid-template-columns:repeat(3,1fr); } }
+  .shot { position:relative; background:var(--bg-2); border:1px solid var(--stroke);
+    border-radius:var(--radius-sm); overflow:hidden; aspect-ratio:1/1; }
+  .shot img { width:100%; height:100%; object-fit:cover; display:block; background:#0e1117; }
+  .shot .meta { position:absolute; left:0; right:0; bottom:0; padding:22px 10px 8px;
+    background:linear-gradient(to top, rgba(0,0,0,.8), transparent);
+    display:flex; align-items:flex-end; justify-content:space-between; gap:8px; opacity:0; transition:opacity .2s; }
+  .shot:hover .meta, .shot:focus-within .meta { opacity:1; }
+  .shot .tag { font-size:10.5px; font-weight:700; color:#fff; }
+  .shot .tag small { display:block; font-weight:500; opacity:.7; }
+  .shot .acts { display:flex; gap:6px; }
+  .icon-btn { width:32px; height:32px; display:grid; place-items:center; border-radius:9px;
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.2); color:#fff; cursor:pointer;
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); transition:transform .12s; }
+  .icon-btn:active { transform:scale(.9); }
+  .icon-btn svg { width:16px; height:16px; }
+  .empty { grid-column:1/-1; text-align:center; color:var(--text-dim); padding:46px 20px; font-size:14px; }
+  .empty .big { font-size:40px; margin-bottom:10px; opacity:.7; }
+
+  #toast { position:fixed; left:50%; bottom:calc(20px + var(--safe-b)); transform:translateX(-50%) translateY(20px);
+    max-width:calc(100% - 32px); padding:12px 18px; border-radius:14px; background:#1a1f2b;
+    border:1px solid var(--stroke-2); color:var(--text); font-size:13.5px; font-weight:600;
+    box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:50; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.err { border-color:rgba(255,95,109,.5); }
+  #toast.ok { border-color:rgba(53,208,138,.5); }
+
+  footer { margin-top:auto; padding-top:10px; text-align:center; font-size:11px; color:var(--text-dim);
+    opacity:.7; line-height:1.6; }
+  footer a { color:var(--text-dim); }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/>
+          <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/>
+        </svg>
+      </div>
+      <div class="brand-text"><h1>Lumen Studio</h1><p>Free · Unlimited · No API key</p></div>
+      <div class="free-badge">∞ FREE</div>
+    </header>
+
+    <!-- Connect / sign-in bar (shown until user links Puter account) -->
+    <div class="connect-bar" id="connectBar">
+      <span class="c-icon">🔑</span>
+      <span class="c-text"><b>One-time connect</b><br/>Link a free Puter account so the tool stays free &amp; unlimited.</span>
+      <button class="connect-btn" id="connectBtn">Connect</button>
+    </div>
+
+    <div class="model-toggle" role="tablist" aria-label="Choose model">
+      <button class="model-btn sunburst active" data-model="sunburst" role="tab" aria-selected="true">
+        <span class="dot"></span>
+        <span class="m-name">GPT Image 2.5 Sunburst</span>
+        <span class="m-desc">Bright, vivid, photographic detail</span>
+      </button>
+      <button class="model-btn flare" data-model="flare" role="tab" aria-selected="false">
+        <span class="dot"></span>
+        <span class="m-name">GPT Image 2.5 Flare</span>
+        <span class="m-desc">Cinematic, dramatic, high contrast</span>
+      </button>
+    </div>
+
+    <div class="card prompt-wrap">
+      <div class="field-label"><span>Prompt</span><span class="count" id="count">0 / 1000</span></div>
+      <textarea id="prompt" maxlength="1000" placeholder="Describe the image you want to create... e.g. A neon cyberpunk alley at night, rain on the pavement, cinematic lighting"></textarea>
+      <div class="chips" id="chips">
+        <button class="chip" data-prompt="A majestic lion in golden sunset light, ultra detailed">🦁 Lion sunset</button>
+        <button class="chip" data-prompt="Futuristic city skyline at dusk, flying cars, neon glow">🏙️ Neon city</button>
+        <button class="chip" data-prompt="Watercolor painting of a misty mountain lake at dawn">🎨 Watercolor</button>
+        <button class="chip" data-prompt="Portrait of a sci-fi astronaut, dramatic studio lighting">🚀 Astronaut</button>
+      </div>
+    </div>
+
+    <div class="options">
+      <div class="opt-group">
+        <span class="opt-label">Quality</span>
+        <div class="seg" id="quality">
+          <button data-val="low">Low</button>
+          <button data-val="medium" class="on">Med</button>
+          <button data-val="high">High</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <span class="opt-label">Aspect</span>
+        <div class="seg" id="aspect">
+          <button data-val="auto" class="on">Auto</button>
+          <button data-val="1:1">1:1</button>
+          <button data-val="3:4">3:4</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="gen-area">
+      <button class="gen-btn" id="gen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/>
+        </svg>
+        <span id="genLabel">Generate Image</span>
+      </button>
+    </div>
+
+    <div id="status"><div class="spinner"></div><span id="statusText">Creating your image…</span></div>
+
+    <div class="gallery" id="gallery">
+      <div class="empty"><div class="big">🎨</div><div>Your generated images will appear here.</div></div>
+    </div>
+
+    <footer>
+      Built with <a href="https://developer.puter.com" target="_blank" rel="noopener">Puter.js</a> · Powered by Puter<br/>
+      The tool is free &amp; unlimited — each user covers their own AI cost.
+    </footer>
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="https://js.puter.com/v2/"></script>
+  <script>
+    (function () {
+      "use strict";
+      const MODELS = {
+        sunburst: { id:"openai/gpt-image-2.5-sunburst", name:"Sunburst" },
+        flare:    { id:"openai/gpt-image-2.5-flare",    name:"Flare" }
+      };
+      const MAX_PROMPT = 1000;
+
+      let modelKey="sunburst", quality="medium", aspect="auto", busy=false, connected=false;
+      const history = [];
+
+      const promptEl=document.getElementById("prompt"), countEl=document.getElementById("count"),
+            genBtn=document.getElementById("gen"), genLabel=document.getElementById("genLabel"),
+            statusEl=document.getElementById("status"), statusText=document.getElementById("statusText"),
+            galleryEl=document.getElementById("gallery"), toastEl=document.getElementById("toast"),
+            connectBar=document.getElementById("connectBar"), connectBtn=document.getElementById("connectBtn");
+
+      function toast(msg,type){ toastEl.textContent=msg; toastEl.className="show "+(type||"");
+        clearTimeout(toast._t); toast._t=setTimeout(()=>{ toastEl.className=""; },3600); }
+      function updateCount(){ countEl.textContent=promptEl.value.length+" / "+MAX_PROMPT; }
+      function setBusy(b){ busy=b; genBtn.disabled=b; genLabel.textContent=b?"Generating…":"Generate Image";
+        statusEl.classList.toggle("show",b); }
+      function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+      function setConnected(v){ connected=v; connectBar.classList.toggle("hidden", v); }
+
+      // Model tabs
+      document.querySelectorAll(".model-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>{ modelKey=btn.dataset.model;
+          document.querySelectorAll(".model-btn").forEach(b=>{ b.classList.toggle("active",b===btn);
+            b.setAttribute("aria-selected", b===btn?"true":"false"); }); });
+      });
+
+      // Segmented controls
+      function wireSeg(id,cb){ const seg=document.getElementById(id);
+        seg.querySelectorAll("button").forEach(btn=>{ btn.addEventListener("click",()=>{
+          seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===btn)); cb(btn.dataset.val); }); }); }
+      wireSeg("quality",v=>{ quality=v; });
+      wireSeg("aspect",v=>{ aspect=v; });
+
+      // Chips
+      document.getElementById("chips").addEventListener("click",e=>{ const chip=e.target.closest(".chip");
+        if(!chip) return; promptEl.value=chip.dataset.prompt; updateCount(); promptEl.focus(); });
+
+      // Prompt
+      promptEl.addEventListener("input",updateCount);
+      promptEl.addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){ e.preventDefault(); generate(); } });
+      updateCount();
+
+      // Connect flow (user gesture -> popup works reliably)
+      connectBtn.addEventListener("click", async () => {
+        connectBtn.disabled = true; connectBtn.textContent = "Connecting…";
+        try {
+          if (typeof puter==="undefined" || !puter || !puter.auth) throw new Error("Puter.js not loaded yet.");
+          await puter.auth.signIn();
+          setConnected(true);
+          toast("Connected! You're all set. ✨","ok");
+        } catch(err){
+          console.error(err);
+          const raw=(err&&err.message)||"";
+          if(/popup|blocked|window\.open|allow/i.test(raw)){
+            toast("Popup blocked. Enable pop-ups for this site in your browser, then tap Connect.","err");
+          } else {
+            toast("Could not connect. Tap Connect again and approve the sign-in window.","err");
+          }
+        } finally { connectBtn.disabled=false; connectBtn.textContent="Connect"; }
+      });
+
+      // Render gallery
+      function renderGallery(){
+        if(!history.length){ galleryEl.innerHTML='<div class="empty"><div class="big">🎨</div><div>Your generated images will appear here.</div></div>'; return; }
+        galleryEl.innerHTML = history.map((item,i)=>{
+          return '<div class="shot" data-i="'+i+'">'+
+            '<img src="'+esc(item.src)+'" alt="Generated image" loading="lazy"/>'+
+            '<div class="meta"><span class="tag">'+esc(item.model)+'<small>tap to view</small></span>'+
+            '<span class="acts">'+
+              '<button class="icon-btn" data-act="dl" title="Download" aria-label="Download">'+
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg></button>'+
+              '<button class="icon-btn" data-act="open" title="Open full size" aria-label="Open">'+
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>'+
+            '</span></div></div>';
+        }).join("");
+      }
+
+      // Gallery actions (delegation)
+      galleryEl.addEventListener("click",e=>{
+        const btn=e.target.closest("[data-act]"); if(!btn) return;
+        const card=btn.closest(".shot"); const item=history[Number(card.dataset.i)]; if(!item) return;
+        if(btn.dataset.act==="dl"){ const a=document.createElement("a"); a.href=item.src;
+          a.download="lumen-"+item.model.toLowerCase()+"-"+Date.now()+".png"; a.rel="noopener";
+          document.body.appendChild(a); a.click(); a.remove(); toast("Downloading image…","ok"); }
+        else if(btn.dataset.act==="open"){ window.open(item.src,"_blank","noopener"); }
+      });
+
+      // Generate
+      async function generate(){
+        if(busy) return;
+        const prompt=promptEl.value.trim();
+        if(!prompt){ toast("Please describe what you want to create.","err"); promptEl.focus(); return; }
+        if(!connected){ toast("Tap “Connect” first, then generate.","err"); return; }
+
+        setBusy(true);
+        statusText.textContent="Creating your image with "+MODELS[modelKey].name+"…";
+        try{
+          const options={ model:MODELS[modelKey].id };
+          if(quality) options.quality=quality;
+          if(aspect && aspect!=="auto") options.size=aspect;
+
+          const img = await puter.ai.txt2img(prompt, options);
+
+          let src="";
+          if(typeof img==="string") src=img;
+          else if(img && typeof img.src==="string") src=img.src;
+          else if(img && img.getAttribute) src=img.getAttribute("src")||"";
+
+          if(!src) throw new Error("No image data returned. Try a different prompt or model.");
+          if(src.startsWith("//")) src="https:"+src;
+
+          history.unshift({ src, model:MODELS[modelKey].name });
+          if(history.length>18) history.pop();
+          renderGallery();
+          toast("Image created ✨","ok");
+        }catch(err){
+          console.error(err);
+          let msg="Something went wrong. Please try again.";
+          const raw=(err&&err.message)||"";
+          if(/sign in|authenticate|login|permission|account/i.test(raw)){ msg="Please connect your Puter account. Tap Connect, then approve the sign-in window."; }
+          else if(/popup|blocked|window\.open/i.test(raw)){ msg="A popup was blocked. Allow pop-ups for this site, then try again."; }
+          else if(raw){ msg=raw; }
+          toast(msg,"err");
+        }finally{ setBusy(false); }
+      }
+
+      genBtn.addEventListener("click",generate);
+
+      // On load: check whether already signed in (e.g. after refresh)
+      (async function init(){
+        try{
+          if(typeof puter!=="undefined" && puter && puter.auth && puter.auth.isSignedIn){
+            const s=await puter.auth.isSignedIn();
+            setConnected(!!s);
+          }
+        }catch(_){ /* keep connect bar visible */ }
+      })();
+    })();
+  </script>
+</body>
+</html>
