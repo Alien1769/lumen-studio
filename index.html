@@ -60,9 +60,11 @@
   .head-tools { margin-left:auto; display:flex; gap:8px; align-items:center; }
   .free-badge { font-size:11px; font-weight:800; padding:6px 10px; border-radius:999px; color:#0b0d12;
     background:linear-gradient(135deg,var(--sunburst),#ffd47a); box-shadow:0 6px 16px rgba(255,180,58,.3); white-space:nowrap; }
-  .theme-btn { width:40px; height:40px; border-radius:12px; background:var(--panel-2); border:1px solid var(--stroke-2);
+  .icon-btn2 { width:40px; height:40px; border-radius:12px; background:var(--panel-2); border:1px solid var(--stroke-2);
     color:var(--text); font-size:16px; cursor:pointer; display:grid; place-items:center; transition:transform .12s; }
-  .theme-btn:active { transform:scale(.92); }
+  .icon-btn2:active { transform:scale(.92); }
+  .prov-badge { font-size:10.5px; font-weight:800; padding:6px 10px; border-radius:999px; color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2)); white-space:nowrap; }
 
   .connect-bar { display:flex; align-items:center; gap:12px; padding:13px 16px;
     background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(255,95,109,.12));
@@ -204,6 +206,8 @@
     padding:4px 7px; border-radius:8px; color:#0b0d12; backdrop-filter:blur(4px); }
   .shot .badge.sunburst { background:rgba(255,180,58,.9); }
   .shot .badge.flare { background:rgba(255,95,109,.9); }
+  .shot .badge.pollinations { background:rgba(53,208,138,.9); }
+  .shot .badge.custom { background:rgba(124,92,255,.9); }
   .shot .ref { position:absolute; top:8px; right:8px; font-size:9.5px; font-weight:800; padding:4px 7px;
     border-radius:8px; color:#fff; background:rgba(124,92,255,.85); }
   .shot .fav { position:absolute; bottom:8px; right:8px; font-size:16px; text-shadow:0 1px 4px rgba(0,0,0,.8); }
@@ -224,7 +228,7 @@
   #lightbox.show { display:flex; }
   .lb-top { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 6px; }
   .lb-top .lb-info { display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .lb-top .lb-info .t { font-size:12px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60vw; }
+  .lb-top .lb-info .t { font-size:12px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:56vw; }
   .lb-top .lb-info .s { font-size:10.5px; color:#a9b0bf; }
   .lb-top .lb-tools { display:flex; gap:8px; align-items:center; }
   .lb-round { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
@@ -280,17 +284,22 @@
   .ed-instr:focus { border-color:var(--accent); }
   .ed-instr::placeholder { color:var(--text-dim); opacity:.8; }
 
-  /* Info modal */
-  #infoModal { position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
+  /* Info + Settings modals */
+  #infoModal, #settingsModal { position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
     background:rgba(6,8,12,.8); backdrop-filter:blur(6px); padding:24px; }
-  #infoModal.show { display:flex; }
-  .info-card { max-width:420px; width:100%; background:var(--bg-2); border:1px solid var(--stroke-2); border-radius:var(--radius);
-    padding:22px; box-shadow:var(--shadow); }
-  .info-card h3 { margin:0 0 10px; font-size:16px; }
+  #infoModal.show, #settingsModal.show { display:flex; }
+  .info-card { max-width:440px; width:100%; background:var(--bg-2); border:1px solid var(--stroke-2); border-radius:var(--radius);
+    padding:22px; box-shadow:var(--shadow); max-height:86vh; overflow-y:auto; }
+  .info-card h3 { margin:0 0 12px; font-size:16px; }
   .info-card p { margin:0 0 12px; font-size:13px; color:var(--text-dim); line-height:1.6; }
   .info-card a { color:var(--accent); }
   .info-close { width:100%; padding:12px; border:none; border-radius:12px; background:var(--panel-2); color:var(--text);
-    font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+    font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; margin-top:6px; }
+  .set-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .set-group input { width:100%; background:var(--bg-2); border:1px solid var(--stroke); border-radius:12px;
+    color:var(--text); font-family:inherit; font-size:13px; padding:11px 13px; outline:none; }
+  .set-group input:focus { border-color:var(--accent); }
+  .set-note { font-size:11.5px; color:var(--text-dim); line-height:1.5; margin:0 0 14px; }
 
   footer { margin-top:auto; padding-top:10px; text-align:center; font-size:11px; color:var(--text-dim); opacity:.75; line-height:1.6; }
   footer a { color:var(--text-dim); }
@@ -310,8 +319,9 @@
       </div>
       <div class="brand-text"><h1>Lumen Studio</h1><p>Free · Unlimited · No API key</p></div>
       <div class="head-tools">
-        <div class="free-badge">∞ FREE</div>
-        <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
+        <div class="prov-badge" id="provBadge">Puter</div>
+        <button class="icon-btn2" id="settingsBtn" title="Settings">⚙️</button>
+        <button class="icon-btn2" id="themeBtn" title="Toggle theme">🌙</button>
       </div>
     </header>
 
@@ -321,7 +331,7 @@
       <button class="connect-btn" id="connectBtn">Connect</button>
     </div>
 
-    <div class="model-toggle" role="tablist" aria-label="Choose model">
+    <div class="model-toggle" role="tablist" aria-label="Choose model" id="modelToggle">
       <button class="model-btn sunburst active" data-model="sunburst" role="tab" aria-selected="true">
         <span class="dot"></span>
         <span class="m-name">GPT Image 2.5 Sunburst</span>
@@ -447,10 +457,32 @@
   <div id="infoModal" role="dialog" aria-modal="true">
     <div class="info-card">
       <h3>About Lumen Studio</h3>
-      <p>Free &amp; unlimited image generation using <b>GPT Image 2.5 Sunburst</b> and <b>GPT Image 2.5 Flare</b> via Puter.js. Each user covers their own AI cost — so the tool costs you nothing and has no rate cap.</p>
+      <p>Free &amp; unlimited image generation via <b>Puter</b> (GPT Image 2.5 Sunburst &amp; Flare), or switch providers in <b>⚙️ Settings</b>. Each user covers their own AI cost on Puter — so the tool costs you nothing.</p>
       <p><b>🎯 Edit point</b> taps a region to change. <b>Markup</b> draws, <b>Edit</b> filters, <b>Crop</b> trims, <b>Text</b> adds words/emoji, <b>Resize</b> scales. In the viewer: Rotate, Flip, Copy, Open, Favorite, Good/Bad, and more.</p>
       <p><a href="https://developer.puter.com" target="_blank" rel="noopener">Powered by Puter</a></p>
       <button class="info-close" id="infoClose">Got it</button>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settingsModal" role="dialog" aria-modal="true">
+    <div class="info-card">
+      <h3>Settings</h3>
+      <div class="set-group">
+        <span class="opt-label">Provider</span>
+        <div class="seg" id="providerSeg">
+          <button data-val="puter" class="on">Puter</button>
+          <button data-val="pollinations">Pollinations</button>
+          <button data-val="custom">Custom API</button>
+        </div>
+      </div>
+      <div id="customFields" style="display:none">
+        <div class="set-group"><span class="opt-label">Base URL</span><input id="custBase" placeholder="https://api.openai.com/v1" /></div>
+        <div class="set-group"><span class="opt-label">API key</span><input id="custKey" type="password" placeholder="sk-..." /></div>
+        <div class="set-group"><span class="opt-label">Model</span><input id="custModel" placeholder="gpt-image-1" /></div>
+      </div>
+      <p class="set-note"><b>Puter</b> = free &amp; unlimited, no key, uses your two GPT Image models. <b>Pollinations</b> = free, no sign-in, but uses a single built-in model. <b>Custom API</b> = bring your own key/endpoint (OpenAI-compatible <code>/images/generations</code>).</p>
+      <button class="info-close" id="settingsClose">Done</button>
     </div>
   </div>
 
@@ -471,10 +503,11 @@
       const SURPRISE = ["A tiny cozy bookstore inside a giant tree, warm golden light","An astronaut walking through a field of glowing flowers on an alien planet","A dragon made of stained glass flying over a cathedral at sunset","A samurai standing in a bamboo forest during heavy rain, cinematic","A floating island with waterfalls cascading into the clouds","A fox wearing a wizard hat reading a spellbook by candlelight","A cyberpunk street market at night, holographic signs, neon reflections","A lighthouse on a cliff during a thunderstorm, waves crashing","A cozy cabin in the snow with a glowing window and smoke from the chimney","A giant koi fish swimming through a sea of cherry blossoms"];
       const STATUS_MSGS = ["Painting your idea…","Adding the fine details…","Bringing it to life…","Almost there…","Sweeping the final touches…"];
       const RES = { "1K":{q:"high",edge:1024}, "2K":{q:"xhigh",edge:2048}, "4K":{q:"max",edge:3840}, "8K":{q:"max",edge:7680} };
-      const MAX_PROMPT=1000, MAX_IMAGES=10, LS_HISTORY="lumen.promptHistory", LS_FAV="lumen.favs", LS_RATE="lumen.ratings", LS_THEME="lumen.theme", MAX_HISTORY=8;
+      const MAX_PROMPT=1000, MAX_IMAGES=10, LS_HISTORY="lumen.promptHistory", LS_FAV="lumen.favs", LS_RATE="lumen.ratings", LS_THEME="lumen.theme", LS_PROV="lumen.provider", LS_CUST="lumen.custom", MAX_HISTORY=8;
 
       let modelKey="sunburst",res="2K",aspect="auto",varCount=1,busy=false,connected=false,style="none",favOnly=false;
       let inputImages=[]; const history=[];
+      let provider="puter",custom={base:"https://api.openai.com/v1",key:"",model:"gpt-image-1"};
 
       const $=id=>document.getElementById(id);
       const promptEl=$("prompt"),negEl=$("negPrompt"),countEl=$("count"),genBtn=$("gen"),genLabel=$("genLabel"),statusEl=$("status"),statusText=$("statusText"),
@@ -484,7 +517,7 @@
             imgCount=$("imgCount"),addImagesBtn=$("addImages"),fileInput=$("fileInput"),lightbox=$("lightbox"),lbImg=$("lbImg"),
             lbTitle=$("lbTitle"),lbSub=$("lbSub"),lbNote=$("lbNote"),lbCaption=$("lbCaption"),lbActions=$("lbActions"),lbClose=$("lbClose"),
             lbShare=$("lbShare"),favBtn=$("favBtn"),editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),
-            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn");
+            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle");
 
       let lbIndex=-1,lbScale=1,favs=new Set(JSON.parse(localStorage.getItem(LS_FAV)||"[]")),ratings=JSON.parse(localStorage.getItem(LS_RATE)||"{}");
 
@@ -499,6 +532,21 @@
       function applyTheme(t){document.documentElement.setAttribute("data-theme",t);themeBtn.textContent=t==="dark"?"🌙":"☀️";try{localStorage.setItem(LS_THEME,t);}catch(_){}}
       themeBtn.addEventListener("click",()=>{const cur=document.documentElement.getAttribute("data-theme")||"dark";applyTheme(cur==="dark"?"light":"dark");});
       applyTheme(localStorage.getItem(LS_THEME)||"dark");
+
+      // ---- Provider / settings ----
+      try{provider=localStorage.getItem(LS_PROV)||"puter";custom=JSON.parse(localStorage.getItem(LS_CUST))||custom;}catch(_){}
+      function applyProviderUI(){
+        providerSeg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.val===provider));
+        customFields.style.display = provider==="custom" ? "block" : "none";
+        provBadge.textContent = provider==="puter"?"Puter":(provider==="pollinations"?"Pollinations":"Custom API");
+        modelToggle.style.display = provider==="puter" ? "" : "none";
+        connectBar.style.display = provider==="puter" ? "" : "none";
+        if(provider==="custom"){ $("custBase").value=custom.base; $("custKey").value=custom.key; $("custModel").value=custom.model; }
+      }
+      providerSeg.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;provider=b.dataset.val;try{localStorage.setItem(LS_PROV,provider);}catch(_){}applyProviderUI();});
+      settingsBtn.addEventListener("click",()=>{applyProviderUI();settingsModal.classList.add("show");});
+      settingsClose.addEventListener("click",()=>{if(provider==="custom"){custom.base=$("custBase").value.trim()||custom.base;custom.key=$("custKey").value.trim();custom.model=$("custModel").value.trim()||custom.model;try{localStorage.setItem(LS_CUST,JSON.stringify(custom));}catch(_){}}settingsModal.classList.remove("show");toast("Settings saved","ok");});
+      settingsModal.addEventListener("click",e=>{if(e.target===settingsModal)settingsModal.classList.remove("show");});
 
       document.querySelectorAll(".model-btn").forEach(btn=>btn.addEventListener("click",()=>{modelKey=btn.dataset.model;document.querySelectorAll(".model-btn").forEach(b=>{b.classList.toggle("active",b===btn);b.setAttribute("aria-selected",b===btn?"true":"false");});}));
       function wireSeg(id,cb){const seg=$(id);seg.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===btn));cb(btn.dataset.val);}));}
@@ -539,7 +587,7 @@
           const ref=(item.inputs&&item.inputs.length)?'<span class="ref">'+item.inputs.length+' img</span>':"";
           const fav=favs.has(item.src)?'<span class="fav">★</span>':"";
           return '<div class="shot" data-i="'+history.indexOf(item)+'"><img src="'+esc(item.src)+'" alt="Generated image" loading="lazy"/>'+
-            '<span class="badge '+item.modelKey+'">'+esc(item.modelName)+'</span>'+ref+fav+
+            '<span class="badge '+item.badgeKey+'">'+esc(item.modelName)+'</span>'+ref+fav+
             '<div class="cap">'+esc(item.prompt.length>44?item.prompt.slice(0,44)+"…":item.prompt)+'<small>tap to view</small></div></div>';
         }).join("");
       }
@@ -550,7 +598,7 @@
       viewToggle.addEventListener("click",()=>{cols3=!cols3;galleryEl.classList.toggle("cols3",cols3);galleryEl.classList.toggle("cols2",!cols3);viewToggle.textContent=cols3?"▦ Grid":"▥ List";toast(cols3?"3-column view":"2-column view","ok");});
       dlAllBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to download yet.","err");return;}history.forEach((it,idx)=>{setTimeout(()=>{const a=document.createElement("a");a.href=it.src;a.download="lumen-"+it.modelKey+"-"+Date.now()+"-"+idx+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();},idx*250);});toast("Downloading "+history.length+" images…","ok");});
 
-      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=MODELS[item.modelKey].name+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.res;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");}
+      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=item.modelName+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.res;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");}
       function updateLbButtons(){const item=history[lbIndex];if(!item)return;favBtn.classList.toggle("on",favs.has(item.src));favBtn.innerHTML=(favs.has(item.src)?"★ Favorite":"☆ Favorite");lbActions.querySelector('[data-act="good"]').classList.toggle("on",ratings[item.src]==="good");lbActions.querySelector('[data-act="bad"]').classList.toggle("on",ratings[item.src]==="bad");}
       function closeLightbox(){lightbox.classList.remove("show");lbImg.src="";lbIndex=-1;}
       lbClose.addEventListener("click",closeLightbox);
@@ -561,7 +609,7 @@
 
       async function loadBase(src){try{const img=new Image();img.crossOrigin="anonymous";await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=src;});return img;}catch(e){const r=await fetch(src);const b=await r.blob();const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=URL.createObjectURL(b);});return img;}}
       async function copyImageClip(item){try{const blob=await(await fetch(item.src)).blob();await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast("Image copied to clipboard","ok");}catch(e){try{await navigator.clipboard.writeText(item.src);toast("Copied image link","ok");}catch(_){toast("Couldn't copy","err");}}}
-      async function transformItem(item,mode){try{const img=await loadBase(item.src);const w=img.naturalWidth,h=img.naturalHeight;const c=document.createElement("canvas");if(mode==="rotate"){c.width=h;c.height=w;const x=c.getContext("2d");x.translate(h/2,w/2);x.rotate(Math.PI/2);x.drawImage(img,-w/2,-h/2);}else{c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(img,0,0);}const url=c.toDataURL("image/png");history.unshift({src:url,modelKey:item.modelKey,modelName:item.modelName,prompt:item.prompt+(mode==="rotate"?" (rotated)":" (flipped)"),res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();toast(mode==="rotate"?"Rotated ✨":"Flipped ✨","ok");}catch(e){toast("Couldn't transform this image.","err");}}
+      async function transformItem(item,mode){try{const img=await loadBase(item.src);const w=img.naturalWidth,h=img.naturalHeight;const c=document.createElement("canvas");if(mode==="rotate"){c.width=h;c.height=w;const x=c.getContext("2d");x.translate(h/2,w/2);x.rotate(Math.PI/2);x.drawImage(img,-w/2,-h/2);}else{c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(img,0,0);}const url=c.toDataURL("image/png");history.unshift({src:url,modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+(mode==="rotate"?" (rotated)":" (flipped)"),res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();toast(mode==="rotate"?"Rotated ✨":"Flipped ✨","ok");}catch(e){toast("Couldn't transform this image.","err");}}
 
       lbActions.addEventListener("click",e=>{const b=e.target.closest(".lb-btn");if(!b)return;const act=b.dataset.act;const item=history[lbIndex];if(!item)return;
         if(act==="fav"){if(favs.has(item.src))favs.delete(item.src);else favs.add(item.src);saveFavs();updateLbButtons();renderGallery();}
@@ -582,7 +630,7 @@
         else if(act==="text"){openEditor(lbIndex,"text");}
         else if(act==="edit"||act==="markup"||act==="resize"){openEditor(lbIndex,act==="edit"?"edit":(act==="markup"?"markup":"resize"));}
       });
-      async function showInfo(item){try{const img=await loadBase(item.src);toast("Size: "+img.naturalWidth+" × "+img.naturalHeight+" · "+item.res+" · "+MODELS[item.modelKey].name,"ok");}catch(_){toast("Size: "+item.res+" · "+MODELS[item.modelKey].name,"ok");}}
+      async function showInfo(item){try{const img=await loadBase(item.src);toast("Size: "+img.naturalWidth+" × "+img.naturalHeight+" · "+item.res+" · "+item.modelName,"ok");}catch(_){toast("Size: "+item.res+" · "+item.modelName,"ok");}}
       lbShare.addEventListener("click",()=>{const item=history[lbIndex];if(item)shareImage(item);});
       async function shareImage(item){try{const blob=await(await fetch(item.src)).blob();const file=new File([blob],"lumen-"+Date.now()+".png",{type:blob.type||"image/png"});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Lumen Studio"});return;}throw new Error("no-file-share");}catch(err){try{await navigator.share({title:"Lumen Studio",text:item.prompt,url:item.src});}catch(e){try{await navigator.clipboard.writeText(item.src);toast("Image link copied","ok");}catch(_){toast("Could not share this image.","err");}}}}
       infoClose.addEventListener("click",()=>infoModal.classList.remove("show"));
@@ -694,9 +742,9 @@
         generate({prompt:scoped,inputs:[annotated],modelKey:item.modelKey,res:item.res,aspect:"auto",noStyle:true});
       }
 
-      function exportEdited(prefix){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const ow=Math.max(1,Math.round(nw*edScale)),oh=Math.max(1,Math.round(nh*edScale));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.filter=filterStr();octx.drawImage(baseImg,0,0,ow,oh);octx.filter="none";const sx=ow/edCanvas.width,sy=oh/edCanvas.height;strokes.forEach(s=>drawStroke(octx,s,sx,sy));out.toBlob(function(bl){if(!bl){toast("Export failed. This image may not be editable.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,prompt:baseItem.prompt+" ("+prefix+")",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-"+prefix+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast(prefix+" saved ✨","ok");},"image/png");}
-      function exportCrop(){if(!crop){toast("Drag to select the area to keep first.","err");return;}const r=normRect({x:crop.x,y:crop.y,w:crop.w,h:crop.h});if(r.w<8||r.h<8){toast("Selection is too small.","err");return;}const ow=Math.max(1,Math.round(r.w)),oh=Math.max(1,Math.round(r.h));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.drawImage(baseImg,r.x,r.y,ow,oh,0,0,ow,oh);out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,prompt:baseItem.prompt+" (cropped)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-crop-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Crop saved ✨","ok");},"image/png");}
-      function exportText(){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const out=document.createElement("canvas");out.width=nw;out.height=nh;const octx=out.getContext("2d");octx.drawImage(baseImg,0,0);texts.forEach(t=>{octx.fillStyle=t.color;octx.font="bold "+t.size+"px sans-serif";octx.textBaseline="middle";octx.fillText(t.text,t.x,t.y);});out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,prompt:baseItem.prompt+" (text)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-text-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Text saved ✨","ok");},"image/png");}
+      function exportEdited(prefix){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const ow=Math.max(1,Math.round(nw*edScale)),oh=Math.max(1,Math.round(nh*edScale));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.filter=filterStr();octx.drawImage(baseImg,0,0,ow,oh);octx.filter="none";const sx=ow/edCanvas.width,sy=oh/edCanvas.height;strokes.forEach(s=>drawStroke(octx,s,sx,sy));out.toBlob(function(bl){if(!bl){toast("Export failed. This image may not be editable.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" ("+prefix+")",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-"+prefix+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast(prefix+" saved ✨","ok");},"image/png");}
+      function exportCrop(){if(!crop){toast("Drag to select the area to keep first.","err");return;}const r=normRect({x:crop.x,y:crop.y,w:crop.w,h:crop.h});if(r.w<8||r.h<8){toast("Selection is too small.","err");return;}const ow=Math.max(1,Math.round(r.w)),oh=Math.max(1,Math.round(r.h));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.drawImage(baseImg,r.x,r.y,ow,oh,0,0,ow,oh);out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" (cropped)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-crop-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Crop saved ✨","ok");},"image/png");}
+      function exportText(){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const out=document.createElement("canvas");out.width=nw;out.height=nh;const octx=out.getContext("2d");octx.drawImage(baseImg,0,0);texts.forEach(t=>{octx.fillStyle=t.color;octx.font="bold "+t.size+"px sans-serif";octx.textBaseline="middle";octx.fillText(t.text,t.x,t.y);});out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" (text)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-text-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Text saved ✨","ok");},"image/png");}
 
       edSave.addEventListener("click",()=>{
         if(edMode==="point"){applyPointEdit();return;}
@@ -706,19 +754,27 @@
         try{exportEdited("edited");}catch(e){console.error(e);toast("Could not export the edited image.","err");}
       });
 
+      // ---------- Provider generate helpers ----------
+      async function puterGen(prompt,options){const img=await puter.ai.txt2img(prompt,options);let src="";if(typeof img==="string")src=img;else if(img&&typeof img.src==="string")src=img.src;else if(img&&img.getAttribute)src=img.getAttribute("src")||"";if(!src)throw new Error("No image data returned.");if(src.startsWith("//"))src="https:"+src;return src;}
+      function pollinationsUrl(prompt,w,h){return "https://image.pollinations.ai/prompt/"+encodeURIComponent(prompt)+"?width="+w+"&height="+h+"&nologo=true";}
+      async function customGen(prompt,model,w,h){if(!custom.base||!custom.key)throw new Error("Custom API needs a base URL and API key (see Settings).");const r=await fetch(custom.base.replace(/\/+$/,"")+"/images/generations",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+custom.key},body:JSON.stringify({model:model,prompt:prompt,size:w+"x"+h,n:1})});const data=await r.json();if(!r.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:"Custom API error "+r.status);const it=(data&&data.data&&data.data[0])||{};if(it.b64_json)return "data:image/png;base64,"+it.b64_json;if(it.url)return it.url;throw new Error("Custom API returned no image.");}
+
       // ---------- Generate ----------
       async function generate(cfg){if(busy)return;cfg=cfg||{};const base=(cfg.prompt!=null?cfg.prompt:promptEl.value);const prompt=cfg.noStyle?base.trim():buildPrompt(base);const mKey=cfg.modelKey||modelKey;const rKey=cfg.res||res;const a=cfg.aspect||aspect;const ins=cfg.inputs||inputImages;const count=Math.max(1,Math.min(4,cfg.count||varCount));
         if(!base.trim()){toast("Please describe what you want to create.","err");promptEl.focus();return;}
-        if(!connected){toast("Tap “Connect” first, then create.","err");return;}
+        if(provider==="puter"&&!connected){toast("Tap “Connect” first, then create.","err");return;}
         setBusy(true);let mi=0;statusText.textContent=STATUS_MSGS[0];const msgi=setInterval(()=>{mi=(mi+1)%STATUS_MSGS.length;statusText.textContent=STATUS_MSGS[mi];},1800);
-        try{const rr=RES[rKey]||RES["2K"];const options={model:MODELS[mKey].id};options.quality=rr.q;const dims=computeSize(rr.edge,a);if(dims){options.width=dims.w;options.height=dims.h;}if(ins&&ins.length)options.input_images=ins.slice();
+        try{
+          const rr=RES[rKey]||RES["2K"];const dims=computeSize(rr.edge,a);const w=dims?dims.w:1024,h=dims?dims.h:1024;
+          const pName=provider==="puter"?MODELS[mKey].name:(provider==="pollinations"?"Pollinations":"Custom");
+          const badgeKey=provider==="puter"?mKey:provider;
           for(let n=0;n<count;n++){
             if(n>0)statusText.textContent="Creating image "+(n+1)+" of "+count+"…";
-            const img=await puter.ai.txt2img(prompt,options);
-            let src="";if(typeof img==="string")src=img;else if(img&&typeof img.src==="string")src=img.src;else if(img&&img.getAttribute)src=img.getAttribute("src")||"";
-            if(!src)throw new Error("No image data returned. Try a different prompt or model.");
-            if(src.startsWith("//"))src="https:"+src;
-            history.unshift({src,modelKey:mKey,modelName:MODELS[mKey].name,prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()});
+            let src;
+            if(provider==="puter"){const options={model:MODELS[mKey].id};options.quality=rr.q;if(dims){options.width=dims.w;options.height=dims.h;}if(ins&&ins.length)options.input_images=ins.slice();src=await puterGen(prompt,options);}
+            else if(provider==="pollinations"){src=pollinationsUrl(prompt,w,h);}
+            else {src=await customGen(prompt,custom.model||"gpt-image-1",w,h);}
+            history.unshift({src,modelKey:provider==="puter"?mKey:provider,modelName:pName,badgeKey:badgeKey,prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()});
           }
           if(history.length>24)history.splice(24);
           renderGallery();pushHistory(base.trim());toast(count>1?count+" images created ✨":"Image created ✨","ok");
@@ -727,6 +783,7 @@
           else if(/popup|blocked|window\.open/i.test(raw))msg="A popup was blocked. Allow pop-ups for this site, then try again.";
           else if(/moderation|flagged|content|safety/i.test(raw))msg="The model's content filter rejected this prompt/image. Try rephrasing it.";
           else if(/bad_request|invalid|400/i.test(raw))msg="That combination wasn't accepted (e.g. too many reference images). Try fewer images or a different setting.";
+          else if(/api key|base url|401|403|404/i.test(raw))msg="Custom API error: "+raw;
           else if(raw)msg=raw;toast(msg,"err");
         }finally{clearInterval(msgi);setBusy(false);}}
 
@@ -734,7 +791,7 @@
       regenerateBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to recreate yet.","err");return;}const item=history[0];generate({prompt:item.prompt,modelKey:item.modelKey,res:item.res,aspect:item.aspect,inputs:item.inputs||[]});});
       clearGalleryBtn.addEventListener("click",()=>{if(!history.length){toast("Gallery already empty.","err");return;}history.length=0;renderGallery();toast("Gallery cleared","ok");});
 
-      renderStyles();renderHistory();renderUploads();
+      renderStyles();renderHistory();renderUploads();applyProviderUI();
       (async function init(){try{if(typeof puter!=="undefined"&&puter&&puter.auth&&puter.auth.isSignedIn){const s=await puter.auth.isSignedIn();setConnected(!!s);}}catch(_){}})();
     })();
   </script>
