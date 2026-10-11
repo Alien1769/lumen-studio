@@ -377,7 +377,6 @@
     <div class="low-banner hidden" id="lowBanner">
       <span class="lb-msg" id="lowMsg">⚠️ Your Puter balance is low.</span>
       <div class="lb-actions">
-        <button class="pill-btn" id="lowEarn">🌱 Earn Pollen</button>
         <button class="pill-btn ghost" id="lowDismiss" title="Dismiss">✕</button>
       </div>
     </div>
@@ -627,7 +626,7 @@
             lbTitle=$("lbTitle"),lbSub=$("lbSub"),lbNote=$("lbNote"),lbCaption=$("lbCaption"),lbActions=$("lbActions"),lbClose=$("lbClose"),
             lbShare=$("lbShare"),favBtn=$("favBtn"),compareBtn=$("compareBtn"),revertBtn=$("revertBtn"),lbCompare=$("lbCompare"),cmpBefore=$("cmpBefore"),cmpAfter=$("cmpAfter"),cmpLine=$("cmpLine"),cmpHandle=$("cmpHandle"),
             editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),edUndo=$("edUndo"),edRedo=$("edRedo"),
-            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl"),lowBanner=$("lowBanner"),lowMsg=$("lowMsg"),lowEarn=$("lowEarn"),lowDismiss=$("lowDismiss"),customDimsGroup=$("customDimsGroup"),custW=$("custW"),custH=$("custH"),transparentToggle=$("transparentToggle"),collectionsModal=$("collectionsModal"),colList=$("colList"),colName=$("colName"),colAdd=$("colAdd"),colClose=$("colClose"),collectionsBtn=$("collectionsBtn"),filterAll=$("filterAll"),filterFav=$("filterFav"),filterGood=$("filterGood"),filterBad=$("filterBad");
+            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl"),lowBanner=$("lowBanner"),lowMsg=$("lowMsg"),lowDismiss=$("lowDismiss"),customDimsGroup=$("customDimsGroup"),custW=$("custW"),custH=$("custH"),transparentToggle=$("transparentToggle"),collectionsModal=$("collectionsModal"),colList=$("colList"),colName=$("colName"),colAdd=$("colAdd"),colClose=$("colClose"),collectionsBtn=$("collectionsBtn"),filterAll=$("filterAll"),filterFav=$("filterFav"),filterGood=$("filterGood"),filterBad=$("filterBad");
 
       let lbIndex=-1,lbScale=1,favs=new Set(JSON.parse(localStorage.getItem(LS_FAV)||"[]")),ratings=JSON.parse(localStorage.getItem(LS_RATE)||"{}");
 
@@ -638,11 +637,39 @@
       function setConnected(v){
         connected=v;
         if(connectBtn) connectBtn.textContent = v ? "✓ Connected" : "Connect";
-        if(connectText) connectText.innerHTML = v ? "<b>Connected to Puter</b><br/>Your account is linked. Tap the button to open your dashboard &amp; earn Pollen." : "<b>One-time connect</b><br/>Link a free Puter account so the tool stays free &amp; unlimited.";
+        if(connectText) connectText.innerHTML = v ? "<b>Connected to Puter</b><br/>Your account is linked. Tap the button to open your dashboard." : "<b>One-time connect</b><br/>Link a free Puter account so the tool stays free &amp; unlimited.";
       }
       function saveFavs(){try{localStorage.setItem(LS_FAV,JSON.stringify([...favs]));}catch(_){}}
       function saveRatings(){try{localStorage.setItem(LS_RATE,JSON.stringify(ratings));}catch(_){}}
       function saveCols(){try{localStorage.setItem(LS_COLS,JSON.stringify(collections));localStorage.setItem(LS_ACTCOL,activeCollection);}catch(_){}}
+      function newId(){return Date.now()+Math.random();}
+
+      // ---- IndexedDB persistence ----
+      let db=null;
+      function openDB(){return new Promise((res,rej)=>{const req=indexedDB.open("lumen",1);req.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains("imgs"))d.createObjectStore("imgs",{keyPath:"id"});};req.onsuccess=e=>{db=e.target.result;res(db);};req.onerror=e=>rej(e);});}
+      async function saveRecord(rec){try{await openDB();return new Promise((res,rej)=>{const tx=db.transaction("imgs","readwrite");tx.objectStore("imgs").put(rec);tx.oncomplete=res;tx.onerror=e=>rej(e);});}catch(_){}}
+      async function allRecords(){try{await openDB();return new Promise((res,rej)=>{const tx=db.transaction("imgs","readonly");const rq=tx.objectStore("imgs").getAll();rq.onsuccess=()=>res(rq.result||[]);rq.onerror=e=>rej(e);});}catch(_){return[];}}
+      async function clearRecords(){try{await openDB();return new Promise((res,rej)=>{const tx=db.transaction("imgs","readwrite");tx.objectStore("imgs").clear();tx.oncomplete=res;tx.onerror=e=>rej(e);});}catch(_){}}
+      async function toDataURLSafe(src){
+        if(!src) return null;
+        if(src.startsWith("data:")) return src;
+        try{const r=await fetch(src);if(!r.ok)return null;const b=await r.blob();return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(fr.error);fr.readAsDataURL(b);});}catch(e){return null;}
+      }
+      async function persistItem(item){
+        try{
+          const data = await toDataURLSafe(item.src);
+          const origData = item.original ? await toDataURLSafe(item.original) : null;
+          await saveRecord({ id:item.id, src:data||item.src, original:origData||item.original||null, modelKey:item.modelKey, modelName:item.modelName, badgeKey:item.badgeKey, prompt:item.prompt, res:item.res, aspect:item.aspect, inputsCount:(item.inputs&&item.inputs.length)||0, edited:!!item.edited });
+        }catch(_){}
+      }
+      async function loadPersisted(){
+        try{
+          const recs = await allRecords();
+          recs.sort((a,b)=>b.id-a.id);
+          recs.forEach(rec=>{history.push({src:rec.src,id:rec.id,modelKey:rec.modelKey,modelName:rec.modelName,badgeKey:rec.badgeKey,prompt:rec.prompt,res:rec.res,aspect:rec.aspect,inputs:[],original:rec.original,edited:rec.edited,inputsCount:rec.inputsCount||0});});
+          renderGallery();
+        }catch(_){}
+      }
 
       // ---- Theme: Dark / Light / Auto ----
       let themeMode="dark";
@@ -677,7 +704,6 @@
       // ---- Live balance + low-balance warning ----
       function openPuter(){window.open("https://puter.com/dashboard","_blank","noopener");}
       balanceEl.addEventListener("click",openPuter);
-      lowEarn.addEventListener("click",openPuter);
       lowDismiss.addEventListener("click",()=>{lowBanner.classList.add("hidden");});
       async function refreshBalance(){
         if(provider!=="puter"||!connected){balanceEl.style.display="none";lowBanner.classList.add("hidden");return;}
@@ -690,7 +716,7 @@
             balanceEl.textContent="💳 $"+dollars.toFixed(2);
             balanceEl.classList.toggle("crit",dollars<0.05);
             balanceEl.classList.toggle("low",dollars>=0.05&&dollars<0.20);
-            if(dollars<0.50){lowMsg.textContent="⚠️ Your Puter balance is low ($"+dollars.toFixed(2)+"). Earn free Pollen or switch to the free Pollinations provider in ⚙️ Settings.";lowBanner.classList.remove("hidden");}
+            if(dollars<0.50){lowMsg.textContent="⚠️ Your Puter balance is low ($"+dollars.toFixed(2)+"). Lower the Resolution, set Variations to 1, or switch to the free Pollinations provider in ⚙️ Settings.";lowBanner.classList.remove("hidden");}
             else {lowBanner.classList.add("hidden");}
           } else {balanceEl.style.display="none";lowBanner.classList.add("hidden");}
         }catch(e){balanceEl.style.display="none";lowBanner.classList.add("hidden");}
@@ -706,15 +732,12 @@
       custW.addEventListener("input",e=>{customW=Math.max(16,Math.min(3840,+e.target.value||1024));});
       custH.addEventListener("input",e=>{customH=Math.max(16,Math.min(3840,+e.target.value||1024));});
       transparentToggle.addEventListener("change",e=>{transparent=e.target.checked;});
-
       function setRes(k){res=k;$("res").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.val===k));}
       function setAspect(k){aspect=k;$("aspect").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.val===k));customDimsGroup.style.display=aspect==="custom"?"flex":"none";}
 
-      // ---- Templates ----
       function renderTpl(){tplRow.innerHTML=TEMPLATES.map((t,i)=>'<button class="tpl-chip" data-i="'+i+'">'+esc(t.name)+'</button>').join("");}
       tplRow.addEventListener("click",e=>{const b=e.target.closest(".tpl-chip");if(!b)return;const t=TEMPLATES[+b.dataset.i];promptEl.value=t.prompt;updateCount();setRes(t.res);setAspect(t.aspect);toast("Template applied: "+t.name,"ok");});
 
-      // ---- Styles ----
       function renderStyles(){styleRow.innerHTML=STYLES.map(s=>'<button class="style-chip'+(s.id===style?' on':'')+'" data-style="'+s.id+'">'+esc(s.label)+'</button>').join("");}
       styleRow.addEventListener("click",e=>{const c=e.target.closest(".style-chip");if(!c)return;style=c.dataset.style;styleRow.querySelectorAll(".style-chip").forEach(b=>b.classList.toggle("on",b===c));});
 
@@ -749,20 +772,19 @@
 
       function computeSize(edge,aspect){let w=0,h=0;if(aspect==="1:1"){w=h=edge;}else if(aspect==="3:4"){w=Math.round(edge*0.75);h=edge;}else if(aspect==="16:9"){w=edge;h=Math.round(edge*9/16);}else if(aspect==="9:16"){w=Math.round(edge*9/16);h=edge;}else if(aspect==="4:5"){w=Math.round(edge*0.8);h=edge;}else if(aspect==="3:2"){w=edge;h=Math.round(edge*2/3);}else if(aspect==="2:3"){w=Math.round(edge*2/3);h=edge;}else if(aspect==="21:9"){w=edge;h=Math.round(edge*9/21);}else return null;const clamp=v=>Math.max(16,Math.min(3840,Math.round(v/16)*16));return {w:clamp(w),h:clamp(h)};}
 
-      function inCollection(src){return activeCollection && collections[activeCollection] && collections[activeCollection].includes(src);}
       function passesFilter(item){
-        if(filterMode==="fav" && !favs.has(item.src)) return false;
-        if(filterMode==="good" && ratings[item.src]!=="good") return false;
-        if(filterMode==="bad" && ratings[item.src]!=="bad") return false;
-        if(activeCollection && !collections[activeCollection].includes(item.src)) return false;
+        if(filterMode==="fav" && !favs.has(item.id)) return false;
+        if(filterMode==="good" && ratings[item.id]!=="good") return false;
+        if(filterMode==="bad" && ratings[item.id]!=="bad") return false;
+        if(activeCollection && !collections[activeCollection].includes(item.id)) return false;
         return true;
       }
       function renderGallery(){
         const list=history.filter(passesFilter);
         if(!list.length){galleryEl.innerHTML='<div class="empty"><div class="big">'+(filterMode==="fav"?"⭐":(filterMode==="good"?"👍":(filterMode==="bad"?"👎":(activeCollection?"📁":"🎨"))))+'</div><div>'+(activeCollection?"No images in this collection yet. Open an image and tap <b>＋ Collection</b>.":"Your creations will appear here.<br/>Describe something and tap <b>Create image</b>.")+'</div></div>';return;}
         galleryEl.innerHTML=list.map((item,i)=>{
-          const ref=(item.inputs&&item.inputs.length)?'<span class="ref">'+item.inputs.length+' img</span>':"";
-          const fav=favs.has(item.src)?'<span class="fav">★</span>':"";
+          const ref=((item.inputs&&item.inputs.length)||item.inputsCount)?'<span class="ref">'+((item.inputs&&item.inputs.length)||item.inputsCount)+' img</span>':"";
+          const fav=favs.has(item.id)?'<span class="fav">★</span>':"";
           return '<div class="shot" data-i="'+history.indexOf(item)+'"><img src="'+esc(item.src)+'" alt="Generated image" loading="lazy"/>'+
             '<span class="badge '+item.badgeKey+'">'+esc(item.modelName)+'</span>'+ref+fav+
             '<div class="cap">'+esc(item.prompt.length>44?item.prompt.slice(0,44)+"…":item.prompt)+'<small>tap to view</small></div></div>';
@@ -789,8 +811,8 @@
       colClose.addEventListener("click",()=>collectionsModal.classList.remove("show"));
       collectionsModal.addEventListener("click",e=>{if(e.target===collectionsModal)collectionsModal.classList.remove("show");});
 
-      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=item.modelName+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.res;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");closeCompare();compareBtn.style.display=item.original?"":"none";revertBtn.style.display=item.original?"":"none";}
-      function updateLbButtons(){const item=history[lbIndex];if(!item)return;favBtn.classList.toggle("on",favs.has(item.src));favBtn.innerHTML=(favs.has(item.src)?"★ Favorite":"☆ Favorite");lbActions.querySelector('[data-act="good"]').classList.toggle("on",ratings[item.src]==="good");lbActions.querySelector('[data-act="bad"]').classList.toggle("on",ratings[item.src]==="bad");}
+      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=item.modelName+(((item.inputs&&item.inputs.length)||item.inputsCount)?" · "+((item.inputs&&item.inputs.length)||item.inputsCount)+" ref":"")+" · "+item.res;lbNote.textContent=((item.inputs&&item.inputs.length)||item.inputsCount)?"Based on "+((item.inputs&&item.inputs.length)||item.inputsCount)+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");closeCompare();compareBtn.style.display=item.original?"":"none";revertBtn.style.display=item.original?"":"none";}
+      function updateLbButtons(){const item=history[lbIndex];if(!item)return;favBtn.classList.toggle("on",favs.has(item.id));favBtn.innerHTML=(favs.has(item.id)?"★ Favorite":"☆ Favorite");lbActions.querySelector('[data-act="good"]').classList.toggle("on",ratings[item.id]==="good");lbActions.querySelector('[data-act="bad"]').classList.toggle("on",ratings[item.id]==="bad");}
       function closeLightbox(){lightbox.classList.remove("show");lbImg.src="";lbIndex=-1;closeCompare();}
       lbClose.addEventListener("click",closeLightbox);
       lightbox.addEventListener("click",e=>{if(e.target===lightbox)closeLightbox();});
@@ -808,20 +830,20 @@
       lbCompare.addEventListener("pointerup",()=>{cmpDrag=false;});
 
       // ---- Revert to original ----
-      revertBtn.addEventListener("click",()=>{const item=history[lbIndex];if(!item||!item.original)return;history.unshift({src:item.original,modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+" (original)",res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeLightbox();toast("Original restored as a new image","ok");});
+      revertBtn.addEventListener("click",()=>{const item=history[lbIndex];if(!item||!item.original)return;const ni={src:item.original,id:newId(),modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+" (original)",res:item.res,aspect:item.aspect,inputs:[],edited:true};history.unshift(ni);if(history.length>24)history.pop();persistItem(ni);renderGallery();closeLightbox();toast("Original restored as a new image","ok");});
 
       let lastTap=0;
       lbImg.addEventListener("click",()=>{const now=Date.now();if(now-lastTap<300){lbScale=lbScale===1?1.8:1;lbImg.style.transform="scale("+lbScale+")";lastTap=0;}else lastTap=now;});
 
       async function loadBase(src){try{const img=new Image();img.crossOrigin="anonymous";await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=src;});return img;}catch(e){const r=await fetch(src);const b=await r.blob();const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=URL.createObjectURL(b);});return img;}}
       async function copyImageClip(item){try{const blob=await(await fetch(item.src)).blob();await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast("Image copied to clipboard","ok");}catch(e){try{await navigator.clipboard.writeText(item.src);toast("Copied image link","ok");}catch(_){toast("Couldn't copy","err");}}}
-      async function transformItem(item,mode){try{const img=await loadBase(item.src);const w=img.naturalWidth,h=img.naturalHeight;const c=document.createElement("canvas");if(mode==="rotate"){c.width=h;c.height=w;const x=c.getContext("2d");x.translate(h/2,w/2);x.rotate(Math.PI/2);x.drawImage(img,-w/2,-h/2);}else{c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(img,0,0);}const url=c.toDataURL("image/png");history.unshift({src:url,modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+(mode==="rotate"?" (rotated)":" (flipped)"),res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),original:item.src,edited:true});if(history.length>24)history.pop();renderGallery();toast(mode==="rotate"?"Rotated ✨":"Flipped ✨","ok");}catch(e){toast("Couldn't transform this image.","err");}}
+      async function transformItem(item,mode){try{const img=await loadBase(item.src);const w=img.naturalWidth,h=img.naturalHeight;const c=document.createElement("canvas");if(mode==="rotate"){c.width=h;c.height=w;const x=c.getContext("2d");x.translate(h/2,w/2);x.rotate(Math.PI/2);x.drawImage(img,-w/2,-h/2);}else{c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(img,0,0);}const url=c.toDataURL("image/png");const ni={src:url,id:newId(),modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+(mode==="rotate"?" (rotated)":" (flipped)"),res:item.res,aspect:item.aspect,inputs:[],original:item.src,edited:true};history.unshift(ni);if(history.length>24)history.pop();persistItem(ni);renderGallery();toast(mode==="rotate"?"Rotated ✨":"Flipped ✨","ok");}catch(e){toast("Couldn't transform this image.","err");}}
 
       lbActions.addEventListener("click",e=>{const b=e.target.closest(".lb-btn");if(!b)return;const act=b.dataset.act;const item=history[lbIndex];if(!item)return;
-        if(act==="fav"){if(favs.has(item.src))favs.delete(item.src);else favs.add(item.src);saveFavs();updateLbButtons();renderGallery();}
-        else if(act==="good"){ratings[item.src]=ratings[item.src]==="good"?undefined:"good";saveRatings();updateLbButtons();toast(ratings[item.src]==="good"?"Marked as good response":"Rating removed","ok");}
-        else if(act==="bad"){ratings[item.src]=ratings[item.src]==="bad"?undefined:"bad";saveRatings();updateLbButtons();toast(ratings[item.src]==="bad"?"Marked as bad response":"Rating removed","ok");}
-        else if(act==="addcol"){if(!Object.keys(collections).length){collections["Favorites"]=[];}const cname=activeCollection||Object.keys(collections)[0];if(!collections[cname].includes(item.src)){collections[cname].push(item.src);saveCols();toast("Added to collection: "+cname,"ok");}else{toast("Already in that collection","err");}}
+        if(act==="fav"){if(favs.has(item.id))favs.delete(item.id);else favs.add(item.id);saveFavs();updateLbButtons();renderGallery();}
+        else if(act==="good"){ratings[item.id]=ratings[item.id]==="good"?undefined:"good";saveRatings();updateLbButtons();toast(ratings[item.id]==="good"?"Marked as good response":"Rating removed","ok");}
+        else if(act==="bad"){ratings[item.id]=ratings[item.id]==="bad"?undefined:"bad";saveRatings();updateLbButtons();toast(ratings[item.id]==="bad"?"Marked as bad response":"Rating removed","ok");}
+        else if(act==="addcol"){if(!Object.keys(collections).length){collections["Favorites"]=[];}const cname=activeCollection||Object.keys(collections)[0];if(!collections[cname].includes(item.id)){collections[cname].push(item.id);saveCols();toast("Added to collection: "+cname,"ok");}else{toast("Already in that collection","err");}}
         else if(act==="copy"){try{navigator.clipboard.writeText(item.prompt);toast("Prompt copied","ok");}catch(_){toast("Couldn't copy","err");}}
         else if(act==="copyimg"){copyImageClip(item);}
         else if(act==="open"){window.open(item.src,"_blank","noopener");}
@@ -957,7 +979,7 @@
         generate({prompt:scoped,inputs:[annotated],modelKey:item.modelKey,res:item.res,aspect:"auto",noStyle:true});
       }
 
-      function addEditedItem(url,prefix,orig){const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" ("+prefix+")",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),original:orig||baseItem.src,edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-"+prefix+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast(prefix+" saved ✨","ok");}
+      function addEditedItem(url,prefix,orig){const baseItem=history[edIndex];const ni={src:url,id:newId(),modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" ("+prefix+")",res:baseItem.res,aspect:baseItem.aspect,inputs:[],original:orig||baseItem.src,edited:true};history.unshift(ni);if(history.length>24)history.pop();persistItem(ni);renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-"+prefix+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast(prefix+" saved ✨","ok");}
       function exportEdited(prefix){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const ow=Math.max(1,Math.round(nw*edScale)),oh=Math.max(1,Math.round(nh*edScale));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.filter=filterStr();octx.drawImage(baseImg,0,0,ow,oh);octx.filter="none";const sx=ow/edCanvas.width,sy=oh/edCanvas.height;strokes.forEach(s=>drawStroke(octx,s,sx,sy));out.toBlob(function(bl){if(!bl){toast("Export failed. This image may not be editable.","err");return;}addEditedItem(URL.createObjectURL(bl),prefix);},"image/png");}
       function exportCrop(){if(!crop){toast("Drag to select the area to keep first.","err");return;}const r=normRect({x:crop.x,y:crop.y,w:crop.w,h:crop.h});if(r.w<8||r.h<8){toast("Selection is too small.","err");return;}const ow=Math.max(1,Math.round(r.w)),oh=Math.max(1,Math.round(r.h));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.drawImage(baseImg,r.x,r.y,ow,oh,0,0,ow,oh);out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}addEditedItem(URL.createObjectURL(bl),"crop");},"image/png");}
       function exportText(){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const out=document.createElement("canvas");out.width=nw;out.height=nh;const octx=out.getContext("2d");octx.drawImage(baseImg,0,0);texts.forEach(t=>{octx.fillStyle=t.color;octx.font="bold "+t.size+"px sans-serif";octx.textBaseline="middle";octx.fillText(t.text,t.x,t.y);});out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}addEditedItem(URL.createObjectURL(bl),"text");},"image/png");}
@@ -991,12 +1013,13 @@
             if(provider==="puter"){const options={model:MODELS[mKey].id};options.quality=rr.q;if(dims){options.width=dims.w;options.height=dims.h;}if(transparent)options.transparent=true;if(ins&&ins.length)options.input_images=ins.slice();src=await puterGen(prompt,options);}
             else if(provider==="pollinations"){src=pollinationsUrl(prompt,w,h);}
             else {src=await customGen(prompt,custom.model||"gpt-image-1",w,h,transparent);}
-            history.unshift({src,modelKey:provider==="puter"?mKey:provider,modelName:pName,badgeKey:badgeKey,prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()});
+            const ni={src:src,id:newId(),modelKey:provider==="puter"?mKey:provider,modelName:pName,badgeKey:badgeKey,prompt:prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()};
+            history.unshift(ni);persistItem(ni);
           }
           if(history.length>24)history.splice(24);
           renderGallery();pushHistory(base.trim());toast(count>1?count+" images created ✨":"Image created ✨","ok");refreshBalance();
         }catch(err){console.error(err);let msg="Something went wrong. Please try again.";const raw=(err&&err.message)||"";
-          if(/insufficient_funds|low balance|not enough funding|balance|402/i.test(raw)){msg="Your Puter account balance is too low. Try: lower the Resolution (1K), set Variations to 1, earn free Pollen in your Puter account, or switch to the free Pollinations provider in ⚙️ Settings.";}
+          if(/insufficient_funds|low balance|not enough funding|balance|402/i.test(raw)){msg="Your Puter account balance is too low. Try: lower the Resolution (1K), set Variations to 1, or switch to the free Pollinations provider in ⚙️ Settings.";}
           else if(/sign in|authenticate|login|permission|account/i.test(raw)){msg="Please connect your Puter account. Tap Connect, then approve the sign-in window.";}
           else if(/popup|blocked|window\.open/i.test(raw)){msg="A popup was blocked. Allow pop-ups for this site, then try again.";}
           else if(/moderation|flagged|content|safety/i.test(raw)){msg="The model's content filter rejected this prompt/image. Try rephrasing it.";}
@@ -1008,7 +1031,7 @@
 
       genBtn.addEventListener("click",()=>generate());
       regenerateBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to recreate yet.","err");return;}const item=history[0];generate({prompt:item.prompt,modelKey:item.modelKey,res:item.res,aspect:item.aspect,inputs:item.inputs||[]});});
-      clearGalleryBtn.addEventListener("click",()=>{if(!history.length){toast("Gallery already empty.","err");return;}history.length=0;renderGallery();toast("Gallery cleared","ok");});
+      clearGalleryBtn.addEventListener("click",()=>{if(!history.length){toast("Gallery already empty.","err");return;}history.length=0;clearRecords();renderGallery();toast("Gallery cleared","ok");});
 
       // ---- Keyboard shortcuts ----
       document.addEventListener("keydown",e=>{
@@ -1022,6 +1045,7 @@
       });
 
       renderTpl();renderStyles();renderHistory();renderUploads();applyProviderUI();
+      loadPersisted();
       (async function init(){try{if(typeof puter!=="undefined"&&puter&&puter.auth&&puter.auth.isSignedIn){const s=await puter.auth.isSignedIn();setConnected(!!s);}refreshBalance();}catch(_){refreshBalance();}})();
     })();
   </script>
