@@ -66,9 +66,17 @@
   .prov-badge { font-size:10.5px; font-weight:800; padding:6px 10px; border-radius:999px; color:#fff;
     background:linear-gradient(135deg,var(--accent),var(--accent-2)); white-space:nowrap; }
   .bal-badge { font-size:10.5px; font-weight:800; padding:6px 10px; border-radius:999px; white-space:nowrap;
-    color:#0b0d12; background:rgba(53,208,138,.9); }
+    color:#0b0d12; background:rgba(53,208,138,.9); cursor:pointer; }
   .bal-badge.low { background:rgba(255,180,58,.9); }
   .bal-badge.crit { background:rgba(255,95,109,.9); }
+  .low-banner { display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:var(--radius);
+    border:1px solid rgba(255,180,58,.5); background:linear-gradient(135deg, rgba(255,180,58,.18), rgba(255,95,109,.12)); box-shadow:var(--shadow); }
+  .low-banner.hidden { display:none; }
+  .low-banner .lb-msg { flex:1; font-size:13px; color:var(--text); line-height:1.4; }
+  .low-banner .lb-actions { display:flex; gap:8px; align-items:center; }
+  .pill-btn { padding:10px 14px; border-radius:12px; border:none; font-family:inherit; font-size:13px; font-weight:800;
+    color:#0b0d12; background:linear-gradient(135deg,var(--sunburst),#ffd47a); cursor:pointer; white-space:nowrap; }
+  .pill-btn.ghost { background:var(--panel-2); color:var(--text); border:1px solid var(--stroke-2); }
 
   .connect-bar { display:flex; align-items:center; gap:12px; padding:13px 16px;
     background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(255,95,109,.12));
@@ -309,7 +317,7 @@
   footer a { color:var(--text-dim); }
 
   @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
-  .card, .model-toggle, .connect-bar { animation:fadeIn .4s ease both; }
+  .card, .model-toggle, .connect-bar, .low-banner { animation:fadeIn .4s ease both; }
 </style>
 </head>
 <body>
@@ -324,12 +332,20 @@
       <div class="brand-text"><h1>Lumen Studio</h1><p>Free · Unlimited · No API key</p></div>
       <div class="head-tools">
         <div class="free-badge">∞ FREE</div>
-        <div class="bal-badge" id="balanceEl" style="display:none" title="Remaining Puter balance">💳 –</div>
+        <div class="bal-badge" id="balanceEl" style="display:none" title="Remaining Puter balance — tap to earn Pollen">💳 –</div>
         <div class="prov-badge" id="provBadge">Puter</div>
         <button class="icon-btn2" id="settingsBtn" title="Settings">⚙️</button>
         <button class="icon-btn2" id="themeBtn" title="Toggle theme">🌙</button>
       </div>
     </header>
+
+    <div class="low-banner hidden" id="lowBanner">
+      <span class="lb-msg" id="lowMsg">⚠️ Your Puter balance is low.</span>
+      <div class="lb-actions">
+        <button class="pill-btn" id="lowEarn">🌱 Earn Pollen</button>
+        <button class="pill-btn ghost" id="lowDismiss" title="Dismiss">✕</button>
+      </div>
+    </div>
 
     <div class="connect-bar" id="connectBar">
       <span class="c-icon">🔑</span>
@@ -523,7 +539,7 @@
             imgCount=$("imgCount"),addImagesBtn=$("addImages"),fileInput=$("fileInput"),lightbox=$("lightbox"),lbImg=$("lbImg"),
             lbTitle=$("lbTitle"),lbSub=$("lbSub"),lbNote=$("lbNote"),lbCaption=$("lbCaption"),lbActions=$("lbActions"),lbClose=$("lbClose"),
             lbShare=$("lbShare"),favBtn=$("favBtn"),editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),
-            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl");
+            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl"),lowBanner=$("lowBanner"),lowMsg=$("lowMsg"),lowEarn=$("lowEarn"),lowDismiss=$("lowDismiss");
 
       let lbIndex=-1,lbScale=1,favs=new Set(JSON.parse(localStorage.getItem(LS_FAV)||"[]")),ratings=JSON.parse(localStorage.getItem(LS_RATE)||"{}");
 
@@ -555,9 +571,13 @@
       settingsClose.addEventListener("click",()=>{if(provider==="custom"){custom.base=$("custBase").value.trim()||custom.base;custom.key=$("custKey").value.trim();custom.model=$("custModel").value.trim()||custom.model;try{localStorage.setItem(LS_CUST,JSON.stringify(custom));}catch(_){}}settingsModal.classList.remove("show");toast("Settings saved","ok");});
       settingsModal.addEventListener("click",e=>{if(e.target===settingsModal)settingsModal.classList.remove("show");});
 
-      // ---- Live balance ----
+      // ---- Live balance + low-balance warning ----
+      function openPuter(){window.open("https://puter.com","_blank","noopener");}
+      balanceEl.addEventListener("click",openPuter);
+      lowEarn.addEventListener("click",openPuter);
+      lowDismiss.addEventListener("click",()=>{lowBanner.classList.add("hidden");});
       async function refreshBalance(){
-        if(provider!=="puter"||!connected){balanceEl.style.display="none";return;}
+        if(provider!=="puter"||!connected){balanceEl.style.display="none";lowBanner.classList.add("hidden");return;}
         try{
           const u=await puter.auth.getMonthlyUsage();
           const ai=u&&u.allowanceInfo;
@@ -567,8 +587,12 @@
             balanceEl.textContent="💳 $"+dollars.toFixed(2);
             balanceEl.classList.toggle("crit",dollars<0.05);
             balanceEl.classList.toggle("low",dollars>=0.05&&dollars<0.20);
-          } else {balanceEl.style.display="none";}
-        }catch(e){balanceEl.style.display="none";}
+            if(dollars<0.50){
+              lowMsg.textContent="⚠️ Your Puter balance is low ($"+dollars.toFixed(2)+"). Earn free Pollen or switch to the free Pollinations provider in ⚙️ Settings.";
+              lowBanner.classList.remove("hidden");
+            } else {lowBanner.classList.add("hidden");}
+          } else {balanceEl.style.display="none";lowBanner.classList.add("hidden");}
+        }catch(e){balanceEl.style.display="none";lowBanner.classList.add("hidden");}
       }
 
       document.querySelectorAll(".model-btn").forEach(btn=>btn.addEventListener("click",()=>{modelKey=btn.dataset.model;document.querySelectorAll(".model-btn").forEach(b=>{b.classList.toggle("active",b===btn);b.setAttribute("aria-selected",b===btn?"true":"false");});}));
