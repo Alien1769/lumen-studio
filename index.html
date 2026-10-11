@@ -138,6 +138,10 @@
     cursor:pointer; transition:all .18s; white-space:nowrap; }
   .style-chip.on { color:#0b0d12; background:linear-gradient(135deg,var(--sunburst),#ffd47a);
     border-color:transparent; box-shadow:0 6px 16px rgba(255,180,58,.3); }
+  .tpl-row { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .tpl-row::-webkit-scrollbar { display:none; }
+  .tpl-chip { flex:none; font-size:12px; font-weight:700; color:#fff; background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    padding:8px 13px; border-radius:999px; cursor:pointer; white-space:nowrap; border:none; }
 
   .upload-card { padding:16px; }
   .upload-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
@@ -176,6 +180,17 @@
     color:var(--text-dim); border:none; border-radius:9px; cursor:pointer; font-family:inherit; transition:all .18s; white-space:nowrap; }
   .seg button.on { background:var(--panel-2); color:var(--text); box-shadow:inset 0 0 0 1px var(--stroke-2); }
   .seg.res-seg button { font-size:11.5px; }
+  .custom-dims { display:flex; gap:8px; }
+  .custom-dims input { flex:1; background:var(--bg-2); border:1px solid var(--stroke); border-radius:10px;
+    color:var(--text); font-family:inherit; font-size:13px; padding:9px 11px; outline:none; min-width:0; }
+  .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .toggle-row .lbl { font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em; }
+  .switch { position:relative; width:46px; height:28px; flex:none; }
+  .switch input { opacity:0; width:0; height:0; }
+  .switch .slider { position:absolute; inset:0; background:var(--bg-2); border:1px solid var(--stroke-2); border-radius:999px; transition:.2s; }
+  .switch .slider:before { content:""; position:absolute; width:20px; height:20px; left:3px; top:3px; background:var(--text-dim); border-radius:50%; transition:.2s; }
+  .switch input:checked + .slider { background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; }
+  .switch input:checked + .slider:before { transform:translateX(18px); background:#fff; }
 
   .gen-area { padding:0 16px 16px; }
   .gen-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:17px;
@@ -194,13 +209,15 @@
   html[data-theme="light"] .spinner { border-color:rgba(20,25,40,.12); border-top-color:var(--accent); }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  .gal-head { display:flex; align-items:center; justify-content:space-between; padding:0 2px; }
+  .gal-head { display:flex; align-items:center; justify-content:space-between; padding:0 2px; flex-wrap:wrap; gap:8px; }
   .gal-head .g-title { font-size:12px; font-weight:700; letter-spacing:.04em; color:var(--text-dim); text-transform:uppercase; }
-  .gal-actions { display:flex; gap:8px; }
+  .gal-actions { display:flex; gap:8px; flex-wrap:wrap; }
   .gal-action { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:var(--text-dim);
     background:var(--panel-2); border:1px solid var(--stroke); padding:7px 11px; border-radius:999px; cursor:pointer; font-family:inherit; transition:all .18s; }
   .gal-action:active { transform:scale(.96); }
   .gal-action.on { color:var(--sunburst); border-color:var(--sunburst); background:rgba(255,180,58,.14); }
+  .gal-action.on.good { color:var(--ok); border-color:var(--ok); background:rgba(53,208,138,.14); }
+  .gal-action.on.bad { color:var(--err); border-color:var(--err); background:rgba(255,95,109,.14); }
 
   .gallery { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .gallery.cols3 { grid-template-columns:repeat(3,1fr); }
@@ -239,16 +256,23 @@
   #lightbox.show { display:flex; }
   .lb-top { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 6px; }
   .lb-top .lb-info { display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .lb-top .lb-info .t { font-size:12px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:56vw; }
+  .lb-top .lb-info .t { font-size:12px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52vw; }
   .lb-top .lb-info .s { font-size:10.5px; color:#a9b0bf; }
   .lb-top .lb-tools { display:flex; gap:8px; align-items:center; }
   .lb-round { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
     color:#fff; display:grid; place-items:center; cursor:pointer; font-size:16px; }
   .lb-share { padding:10px 16px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
     color:#fff; font-weight:800; font-size:13px; border:none; cursor:pointer; }
-  .lb-main { flex:1; display:flex; align-items:center; justify-content:center; padding:6px 16px; overflow:hidden; }
+  .lb-main { flex:1; display:flex; align-items:center; justify-content:center; padding:6px 16px; overflow:hidden; position:relative; }
   .lb-img-wrap { max-width:100%; max-height:100%; display:flex; align-items:center; justify-content:center; }
   .lb-img-wrap img { max-width:100%; max-height:60vh; display:block; transition:transform .25s ease; transform-origin:center; border-radius:10px; }
+  .lb-compare { position:relative; max-width:100%; max-height:60vh; aspect-ratio:1/1; overflow:hidden; border-radius:10px; display:none; }
+  .lb-compare.show { display:block; }
+  .lb-compare img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#000; }
+  .lb-compare .cmpAfter { clip-path:inset(0 50% 0 0); }
+  .cmp-line { position:absolute; top:0; bottom:0; left:50%; width:2px; background:#fff; transform:translateX(-1px); z-index:5; }
+  .cmp-handle { position:absolute; top:50%; left:50%; width:36px; height:36px; transform:translate(-50%,-50%); z-index:6;
+    background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:#0b0d12; font-weight:800; }
   .lb-note { text-align:center; font-size:11px; color:#c9b8ff; padding:0 16px; }
   .lb-caption { text-align:center; font-size:11px; color:#a9b0bf; padding:6px 16px 2px; }
   .lb-actions { display:flex; gap:8px; overflow-x:auto; padding:12px 16px calc(16px + var(--safe-b));
@@ -295,11 +319,11 @@
   .ed-instr:focus { border-color:var(--accent); }
   .ed-instr::placeholder { color:var(--text-dim); opacity:.8; }
 
-  /* Info + Settings modals */
-  #infoModal, #settingsModal { position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
+  /* Info + Settings + Collections modals */
+  #infoModal, #settingsModal, #collectionsModal { position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
     background:rgba(6,8,12,.8); backdrop-filter:blur(6px); padding:24px; }
-  #infoModal.show, #settingsModal.show { display:flex; }
-  .info-card { max-width:440px; width:100%; background:var(--bg-2); border:1px solid var(--stroke-2); border-radius:var(--radius);
+  #infoModal.show, #settingsModal.show, #collectionsModal.show { display:flex; }
+  .info-card { max-width:460px; width:100%; background:var(--bg-2); border:1px solid var(--stroke-2); border-radius:var(--radius);
     padding:22px; box-shadow:var(--shadow); max-height:86vh; overflow-y:auto; }
   .info-card h3 { margin:0 0 12px; font-size:16px; }
   .info-card p { margin:0 0 12px; font-size:13px; color:var(--text-dim); line-height:1.6; }
@@ -311,6 +335,18 @@
     color:var(--text); font-family:inherit; font-size:13px; padding:11px 13px; outline:none; }
   .set-group input:focus { border-color:var(--accent); }
   .set-note { font-size:11.5px; color:var(--text-dim); line-height:1.5; margin:0 0 14px; }
+  .col-list { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; max-height:40vh; overflow-y:auto; }
+  .col-item { display:flex; align-items:center; justify-content:space-between; padding:11px 13px; border-radius:12px;
+    background:var(--panel-2); border:1px solid var(--stroke); }
+  .col-item.on { border-color:var(--accent); background:rgba(124,92,255,.12); }
+  .col-item .c-name { font-size:13px; font-weight:700; color:var(--text); }
+  .col-item .c-count { font-size:11px; color:var(--text-dim); }
+  .col-item .c-acts { display:flex; gap:6px; }
+  .col-item .mini { padding:6px 10px; border-radius:8px; border:1px solid var(--stroke-2); background:var(--panel-2);
+    color:var(--text); font-size:11px; font-weight:700; cursor:pointer; }
+  .col-new { display:flex; gap:8px; }
+  .col-new input { flex:1; background:var(--bg-2); border:1px solid var(--stroke); border-radius:10px; color:var(--text);
+    font-family:inherit; font-size:13px; padding:10px 12px; outline:none; }
 
   footer { margin-top:auto; padding-top:10px; text-align:center; font-size:11px; color:var(--text-dim); opacity:.75; line-height:1.6; }
   footer a { color:var(--text-dim); }
@@ -334,7 +370,7 @@
         <div class="bal-badge" id="balanceEl" style="display:none" title="Remaining Puter balance — tap to open dashboard">💳 –</div>
         <div class="prov-badge" id="provBadge">Puter</div>
         <button class="icon-btn2" id="settingsBtn" title="Settings">⚙️</button>
-        <button class="icon-btn2" id="themeBtn" title="Toggle theme">🌙</button>
+        <button class="icon-btn2" id="themeBtn" title="Toggle theme (Dark/Light/Auto)">🌙</button>
       </div>
     </header>
 
@@ -373,6 +409,8 @@
         <button class="tool-btn" id="surpriseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11h8"/><path d="M8 7h8"/><path d="M12 15h4"/></svg> Surprise me</button>
         <button class="tool-btn" id="clearPromptBtn" title="Clear prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg> Clear</button>
       </div>
+      <div class="style-label">Templates</div>
+      <div class="tpl-row" id="tplRow"></div>
       <div class="style-label">Style</div>
       <div class="style-row" id="styleRow"></div>
       <div class="chips" id="chips">
@@ -401,7 +439,11 @@
       <div class="opt-group"><span class="opt-label">Resolution</span>
         <div class="seg res-seg" id="res"><button data-val="1K">1K</button><button data-val="2K" class="on">2K</button><button data-val="4K">4K</button><button data-val="8K">8K</button></div></div>
       <div class="opt-group"><span class="opt-label">Aspect</span>
-        <div class="seg" id="aspect"><button data-val="auto" class="on">Auto</button><button data-val="1:1">1:1</button><button data-val="3:4">3:4</button><button data-val="16:9">16:9</button><button data-val="9:16">9:16</button><button data-val="4:5">4:5</button><button data-val="3:2">3:2</button><button data-val="2:3">2:3</button><button data-val="21:9">21:9</button></div></div>
+        <div class="seg" id="aspect"><button data-val="auto" class="on">Auto</button><button data-val="1:1">1:1</button><button data-val="3:4">3:4</button><button data-val="16:9">16:9</button><button data-val="9:16">9:16</button><button data-val="4:5">4:5</button><button data-val="3:2">3:2</button><button data-val="2:3">2:3</button><button data-val="21:9">21:9</button><button data-val="custom">Custom</button></div></div>
+      <div class="opt-group full" id="customDimsGroup" style="display:none"><span class="opt-label">Custom size</span>
+        <div class="custom-dims"><input id="custW" type="number" min="16" max="3840" step="16" value="1024" placeholder="Width" /><input id="custH" type="number" min="16" max="3840" step="16" value="1024" placeholder="Height" /></div></div>
+      <div class="opt-group full"><div class="toggle-row"><span class="lbl">Transparent background</span>
+        <label class="switch"><input type="checkbox" id="transparentToggle" /><span class="slider"></span></label></div></div>
       <div class="opt-group full"><span class="opt-label">Variations</span>
         <div class="seg" id="vars"><button data-val="1" class="on">1</button><button data-val="2">2</button><button data-val="4">4</button></div></div>
     </div>
@@ -413,7 +455,17 @@
     <div id="status"><div class="spinner"></div><span id="statusText">Painting your idea…</span></div>
 
     <div class="gal-head"><span class="g-title">Gallery</span>
-      <div class="gal-actions"><button class="gal-action" id="viewToggle">▦ Grid</button><button class="gal-action" id="favFilterBtn">★ Favorites</button><button class="gal-action" id="dlAllBtn">⬇ All</button><button class="gal-action" id="regenerateBtn">↻ Recreate</button><button class="gal-action" id="clearGalleryBtn">🗑 Clear</button></div></div>
+      <div class="gal-actions">
+        <button class="gal-action" id="viewToggle">▦ Grid</button>
+        <button class="gal-action" id="filterAll" class="on">All</button>
+        <button class="gal-action" id="filterFav">★ Fav</button>
+        <button class="gal-action" id="filterGood">👍 Good</button>
+        <button class="gal-action" id="filterBad">👎 Bad</button>
+        <button class="gal-action" id="collectionsBtn">📁 Collections</button>
+        <button class="gal-action" id="dlAllBtn">⬇ All</button>
+        <button class="gal-action" id="regenerateBtn">↻ Recreate</button>
+        <button class="gal-action" id="clearGalleryBtn">🗑 Clear</button>
+      </div></div>
     <div class="gallery" id="gallery"><div class="empty"><div class="big">🎨</div><div>Your creations will appear here.<br/>Describe something and tap <b>Create image</b>.</div></div></div>
 
     <footer>Built with <a href="https://developer.puter.com" target="_blank" rel="noopener">Puter.js</a> · Powered by Puter<br/>Free &amp; unlimited — each user covers their own AI cost.</footer>
@@ -428,10 +480,20 @@
         <button class="lb-round" id="lbClose" aria-label="Close">✕</button>
       </div>
     </div>
-    <div class="lb-main"><div class="lb-img-wrap"><img id="lbImg" alt="Generated image" /></div></div>
+    <div class="lb-main">
+      <div class="lb-img-wrap"><img id="lbImg" alt="Generated image" /></div>
+      <div class="lb-compare" id="lbCompare">
+        <img id="cmpBefore" alt="Before" />
+        <img id="cmpAfter" class="cmpAfter" alt="After" />
+        <div class="cmp-line" id="cmpLine"></div>
+        <div class="cmp-handle" id="cmpHandle">⇔</div>
+      </div>
+    </div>
     <div class="lb-note" id="lbNote"></div>
     <div class="lb-caption" id="lbCaption"></div>
     <div class="lb-actions" id="lbActions">
+      <button class="lb-btn" data-act="compare" id="compareBtn" style="display:none">⇔ Before/After</button>
+      <button class="lb-btn" data-act="revert" id="revertBtn" style="display:none">↩ Original</button>
       <button class="lb-btn" data-act="point">🎯 Edit point</button>
       <button class="lb-btn" data-act="edit">✏️ Edit</button>
       <button class="lb-btn" data-act="markup">🖌 Markup</button>
@@ -440,6 +502,7 @@
       <button class="lb-btn" data-act="resize">📐 Resize</button>
       <button class="lb-btn" data-act="rotate">↻ Rotate</button>
       <button class="lb-btn" data-act="flip">⇋ Flip</button>
+      <button class="lb-btn" data-act="addcol">＋ Collection</button>
       <button class="lb-btn" data-act="fav" id="favBtn">☆ Favorite</button>
       <button class="lb-btn" data-act="good">👍 Good</button>
       <button class="lb-btn" data-act="bad">👎 Bad</button>
@@ -469,6 +532,8 @@
     <div class="ed-canvas-wrap"><canvas id="edCanvas"></canvas></div>
     <div class="ed-controls" id="edControls"></div>
     <div class="ed-foot">
+      <button class="ed-btn" id="edUndo">↩ Undo</button>
+      <button class="ed-btn" id="edRedo">↪ Redo</button>
       <button class="ed-btn" id="edCancel">Cancel</button>
       <button class="ed-btn primary" id="edSave">Apply</button>
     </div>
@@ -479,7 +544,7 @@
     <div class="info-card">
       <h3>About Lumen Studio</h3>
       <p>Free &amp; unlimited image generation via <b>Puter</b> (GPT Image 2.5 Sunburst &amp; Flare), or switch providers in <b>⚙️ Settings</b>. Each user covers their own AI cost on Puter — so the tool costs you nothing.</p>
-      <p><b>🎯 Edit point</b> taps a region to change. <b>Markup</b> draws, <b>Edit</b> filters, <b>Crop</b> trims, <b>Text</b> adds words/emoji, <b>Resize</b> scales. In the viewer: Rotate, Flip, Copy, Open, Favorite, Good/Bad, and more.</p>
+      <p><b>🎯 Edit point</b> taps a region to change. <b>Markup</b> draws, <b>Edit</b> filters, <b>Crop</b> trims, <b>Text</b> adds words/emoji, <b>Resize</b> scales. In the viewer: Rotate, Flip, Copy, Open, Favorite, Good/Bad, Before/After, Revert, and more.</p>
       <p><a href="https://developer.puter.com" target="_blank" rel="noopener">Powered by Puter</a></p>
       <button class="info-close" id="infoClose">Got it</button>
     </div>
@@ -507,6 +572,20 @@
     </div>
   </div>
 
+  <!-- Collections modal -->
+  <div id="collectionsModal" role="dialog" aria-modal="true">
+    <div class="info-card">
+      <h3>Collections</h3>
+      <div class="col-list" id="colList"></div>
+      <div class="col-new">
+        <input id="colName" maxlength="40" placeholder="New collection name" />
+        <button class="pill-btn" id="colAdd">＋ Add</button>
+      </div>
+      <p class="set-note">Tap a collection to view only its images. Tap a name to open it, ✕ to delete.</p>
+      <button class="info-close" id="colClose">Done</button>
+    </div>
+  </div>
+
   <div id="toast"></div>
   <input type="file" id="fileInput" accept="image/*" multiple hidden />
 
@@ -521,24 +600,34 @@
         {id:"cyber",label:"Cyberpunk",desc:"cyberpunk, neon glow, futuristic, cinematic"},{id:"water",label:"Watercolor",desc:"watercolor painting, soft washes, paper texture"},
         {id:"port",label:"Studio Portrait",desc:"professional studio portrait, dramatic lighting, sharp focus"},{id:"fantasy",label:"Fantasy",desc:"epic fantasy, mystical, intricate detail, dramatic"}
       ];
+      const TEMPLATES = [
+        {name:"🟡 Logo",prompt:"A minimalist flat vector logo, clean, centered, on a plain background",res:"2K",aspect:"1:1"},
+        {name:"🖥 Wallpaper",prompt:"A stunning high-detail wallpaper, vibrant colors, no text",res:"4K",aspect:"16:9"},
+        {name:"🎮 Character",prompt:"Detailed character concept art, full body, dynamic pose",res:"2K",aspect:"3:4"},
+        {name:"👤 Avatar",prompt:"A stylized profile avatar, expressive, well-lit",res:"1K",aspect:"1:1"},
+        {name:"📦 Product",prompt:"A professional product photo, clean studio lighting, shallow depth of field",res:"2K",aspect:"4:5"}
+      ];
       const SURPRISE = ["A tiny cozy bookstore inside a giant tree, warm golden light","An astronaut walking through a field of glowing flowers on an alien planet","A dragon made of stained glass flying over a cathedral at sunset","A samurai standing in a bamboo forest during heavy rain, cinematic","A floating island with waterfalls cascading into the clouds","A fox wearing a wizard hat reading a spellbook by candlelight","A cyberpunk street market at night, holographic signs, neon reflections","A lighthouse on a cliff during a thunderstorm, waves crashing","A cozy cabin in the snow with a glowing window and smoke from the chimney","A giant koi fish swimming through a sea of cherry blossoms"];
       const STATUS_MSGS = ["Painting your idea…","Adding the fine details…","Bringing it to life…","Almost there…","Sweeping the final touches…"];
       const RES = { "1K":{q:"high",edge:1024}, "2K":{q:"xhigh",edge:2048}, "4K":{q:"max",edge:3840}, "8K":{q:"max",edge:7680} };
-      const MAX_PROMPT=1000, MAX_IMAGES=10, LS_HISTORY="lumen.promptHistory", LS_FAV="lumen.favs", LS_RATE="lumen.ratings", LS_THEME="lumen.theme", LS_PROV="lumen.provider", LS_CUST="lumen.custom", MAX_HISTORY=8;
+      const MAX_PROMPT=1000, MAX_IMAGES=10, LS_HISTORY="lumen.promptHistory", LS_FAV="lumen.favs", LS_RATE="lumen.ratings", LS_THEME="lumen.theme", LS_PROV="lumen.provider", LS_CUST="lumen.custom", LS_COLS="lumen.collections", LS_ACTCOL="lumen.activeCollection", MAX_HISTORY=8;
 
-      let modelKey="sunburst",res="2K",aspect="auto",varCount=1,busy=false,connected=false,style="none",favOnly=false;
+      let modelKey="sunburst",res="2K",aspect="auto",varCount=1,busy=false,connected=false,style="none",filterMode="all";
+      let transparent=false,customW=1024,customH=1024;
       let inputImages=[]; const history=[];
       let provider="puter",custom={base:"https://api.openai.com/v1",key:"",model:"gpt-image-1"};
+      let collections={},activeCollection="";
 
       const $=id=>document.getElementById(id);
       const promptEl=$("prompt"),negEl=$("negPrompt"),countEl=$("count"),genBtn=$("gen"),genLabel=$("genLabel"),statusEl=$("status"),statusText=$("statusText"),
-            galleryEl=$("gallery"),toastEl=$("toast"),connectBar=$("connectBar"),connectBtn=$("connectBtn"),connectText=$("connectText"),styleRow=$("styleRow"),
+            galleryEl=$("gallery"),toastEl=$("toast"),connectBar=$("connectBar"),connectBtn=$("connectBtn"),connectText=$("connectText"),styleRow=$("styleRow"),tplRow=$("tplRow"),
             historyCard=$("historyCard"),historyList=$("historyList"),clearHistoryBtn=$("clearHistory"),surpriseBtn=$("surpriseBtn"),
-            clearPromptBtn=$("clearPromptBtn"),regenerateBtn=$("regenerateBtn"),clearGalleryBtn=$("clearGalleryBtn"),favFilterBtn=$("favFilterBtn"),viewToggle=$("viewToggle"),dlAllBtn=$("dlAllBtn"),uploadGrid=$("uploadGrid"),
+            clearPromptBtn=$("clearPromptBtn"),regenerateBtn=$("regenerateBtn"),clearGalleryBtn=$("clearGalleryBtn"),viewToggle=$("viewToggle"),dlAllBtn=$("dlAllBtn"),uploadGrid=$("uploadGrid"),
             imgCount=$("imgCount"),addImagesBtn=$("addImages"),fileInput=$("fileInput"),lightbox=$("lightbox"),lbImg=$("lbImg"),
             lbTitle=$("lbTitle"),lbSub=$("lbSub"),lbNote=$("lbNote"),lbCaption=$("lbCaption"),lbActions=$("lbActions"),lbClose=$("lbClose"),
-            lbShare=$("lbShare"),favBtn=$("favBtn"),editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),
-            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl"),lowBanner=$("lowBanner"),lowMsg=$("lowMsg"),lowEarn=$("lowEarn"),lowDismiss=$("lowDismiss");
+            lbShare=$("lbShare"),favBtn=$("favBtn"),compareBtn=$("compareBtn"),revertBtn=$("revertBtn"),lbCompare=$("lbCompare"),cmpBefore=$("cmpBefore"),cmpAfter=$("cmpAfter"),cmpLine=$("cmpLine"),cmpHandle=$("cmpHandle"),
+            editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),edUndo=$("edUndo"),edRedo=$("edRedo"),
+            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl"),lowBanner=$("lowBanner"),lowMsg=$("lowMsg"),lowEarn=$("lowEarn"),lowDismiss=$("lowDismiss"),customDimsGroup=$("customDimsGroup"),custW=$("custW"),custH=$("custH"),transparentToggle=$("transparentToggle"),collectionsModal=$("collectionsModal"),colList=$("colList"),colName=$("colName"),colAdd=$("colAdd"),colClose=$("colClose"),collectionsBtn=$("collectionsBtn"),filterAll=$("filterAll"),filterFav=$("filterFav"),filterGood=$("filterGood"),filterBad=$("filterBad");
 
       let lbIndex=-1,lbScale=1,favs=new Set(JSON.parse(localStorage.getItem(LS_FAV)||"[]")),ratings=JSON.parse(localStorage.getItem(LS_RATE)||"{}");
 
@@ -553,13 +642,24 @@
       }
       function saveFavs(){try{localStorage.setItem(LS_FAV,JSON.stringify([...favs]));}catch(_){}}
       function saveRatings(){try{localStorage.setItem(LS_RATE,JSON.stringify(ratings));}catch(_){}}
+      function saveCols(){try{localStorage.setItem(LS_COLS,JSON.stringify(collections));localStorage.setItem(LS_ACTCOL,activeCollection);}catch(_){}}
 
-      function applyTheme(t){document.documentElement.setAttribute("data-theme",t);themeBtn.textContent=t==="dark"?"🌙":"☀️";try{localStorage.setItem(LS_THEME,t);}catch(_){}}
-      themeBtn.addEventListener("click",()=>{const cur=document.documentElement.getAttribute("data-theme")||"dark";applyTheme(cur==="dark"?"light":"dark");});
-      applyTheme(localStorage.getItem(LS_THEME)||"dark");
+      // ---- Theme: Dark / Light / Auto ----
+      let themeMode="dark";
+      try{themeMode=localStorage.getItem(LS_THEME)||"dark";}catch(_){}
+      function applyThemeMode(){
+        const t = themeMode==="auto" ? (window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark") : themeMode;
+        document.documentElement.setAttribute("data-theme",t);
+        themeBtn.textContent = themeMode==="dark"?"🌙":(themeMode==="light"?"☀️":"🔄");
+        try{localStorage.setItem(LS_THEME,themeMode);}catch(_){}
+      }
+      themeBtn.addEventListener("click",()=>{themeMode = themeMode==="dark"?"light":(themeMode==="light"?"auto":"dark");applyThemeMode();});
+      if(window.matchMedia){ window.matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{ if(themeMode==="auto") applyThemeMode(); }); }
+      applyThemeMode();
 
       // ---- Provider / settings ----
       try{provider=localStorage.getItem(LS_PROV)||"puter";custom=JSON.parse(localStorage.getItem(LS_CUST))||custom;}catch(_){}
+      try{collections=JSON.parse(localStorage.getItem(LS_COLS))||{};activeCollection=localStorage.getItem(LS_ACTCOL)||"";}catch(_){}
       function applyProviderUI(){
         providerSeg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.val===provider));
         customFields.style.display = provider==="custom" ? "block" : "none";
@@ -590,18 +690,31 @@
             balanceEl.textContent="💳 $"+dollars.toFixed(2);
             balanceEl.classList.toggle("crit",dollars<0.05);
             balanceEl.classList.toggle("low",dollars>=0.05&&dollars<0.20);
-            if(dollars<0.50){
-              lowMsg.textContent="⚠️ Your Puter balance is low ($"+dollars.toFixed(2)+"). Earn free Pollen or switch to the free Pollinations provider in ⚙️ Settings.";
-              lowBanner.classList.remove("hidden");
-            } else {lowBanner.classList.add("hidden");}
+            if(dollars<0.50){lowMsg.textContent="⚠️ Your Puter balance is low ($"+dollars.toFixed(2)+"). Earn free Pollen or switch to the free Pollinations provider in ⚙️ Settings.";lowBanner.classList.remove("hidden");}
+            else {lowBanner.classList.add("hidden");}
           } else {balanceEl.style.display="none";lowBanner.classList.add("hidden");}
         }catch(e){balanceEl.style.display="none";lowBanner.classList.add("hidden");}
       }
 
       document.querySelectorAll(".model-btn").forEach(btn=>btn.addEventListener("click",()=>{modelKey=btn.dataset.model;document.querySelectorAll(".model-btn").forEach(b=>{b.classList.toggle("active",b===btn);b.setAttribute("aria-selected",b===btn?"true":"false");});}));
       function wireSeg(id,cb){const seg=$(id);seg.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===btn));cb(btn.dataset.val);}));}
-      wireSeg("res",v=>res=v); wireSeg("aspect",v=>aspect=v); wireSeg("vars",v=>varCount=+v);
+      wireSeg("res",v=>{res=v;}); wireSeg("vars",v=>varCount=+v);
+      $("aspect").querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{
+        $("aspect").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===btn)); aspect=btn.dataset.val;
+        customDimsGroup.style.display = aspect==="custom" ? "flex" : "none";
+      }));
+      custW.addEventListener("input",e=>{customW=Math.max(16,Math.min(3840,+e.target.value||1024));});
+      custH.addEventListener("input",e=>{customH=Math.max(16,Math.min(3840,+e.target.value||1024));});
+      transparentToggle.addEventListener("change",e=>{transparent=e.target.checked;});
 
+      function setRes(k){res=k;$("res").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.val===k));}
+      function setAspect(k){aspect=k;$("aspect").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.val===k));customDimsGroup.style.display=aspect==="custom"?"flex":"none";}
+
+      // ---- Templates ----
+      function renderTpl(){tplRow.innerHTML=TEMPLATES.map((t,i)=>'<button class="tpl-chip" data-i="'+i+'">'+esc(t.name)+'</button>').join("");}
+      tplRow.addEventListener("click",e=>{const b=e.target.closest(".tpl-chip");if(!b)return;const t=TEMPLATES[+b.dataset.i];promptEl.value=t.prompt;updateCount();setRes(t.res);setAspect(t.aspect);toast("Template applied: "+t.name,"ok");});
+
+      // ---- Styles ----
       function renderStyles(){styleRow.innerHTML=STYLES.map(s=>'<button class="style-chip'+(s.id===style?' on':'')+'" data-style="'+s.id+'">'+esc(s.label)+'</button>').join("");}
       styleRow.addEventListener("click",e=>{const c=e.target.closest(".style-chip");if(!c)return;style=c.dataset.style;styleRow.querySelectorAll(".style-chip").forEach(b=>b.classList.toggle("on",b===c));});
 
@@ -636,9 +749,17 @@
 
       function computeSize(edge,aspect){let w=0,h=0;if(aspect==="1:1"){w=h=edge;}else if(aspect==="3:4"){w=Math.round(edge*0.75);h=edge;}else if(aspect==="16:9"){w=edge;h=Math.round(edge*9/16);}else if(aspect==="9:16"){w=Math.round(edge*9/16);h=edge;}else if(aspect==="4:5"){w=Math.round(edge*0.8);h=edge;}else if(aspect==="3:2"){w=edge;h=Math.round(edge*2/3);}else if(aspect==="2:3"){w=Math.round(edge*2/3);h=edge;}else if(aspect==="21:9"){w=edge;h=Math.round(edge*9/21);}else return null;const clamp=v=>Math.max(16,Math.min(3840,Math.round(v/16)*16));return {w:clamp(w),h:clamp(h)};}
 
+      function inCollection(src){return activeCollection && collections[activeCollection] && collections[activeCollection].includes(src);}
+      function passesFilter(item){
+        if(filterMode==="fav" && !favs.has(item.src)) return false;
+        if(filterMode==="good" && ratings[item.src]!=="good") return false;
+        if(filterMode==="bad" && ratings[item.src]!=="bad") return false;
+        if(activeCollection && !collections[activeCollection].includes(item.src)) return false;
+        return true;
+      }
       function renderGallery(){
-        const list=favOnly?history.filter(it=>favs.has(it.src)):history;
-        if(!list.length){galleryEl.innerHTML='<div class="empty"><div class="big">'+(favOnly?"⭐":"🎨")+'</div><div>'+(favOnly?"No favorites yet. Tap ★ on an image to save it.":"Your creations will appear here.<br/>Describe something and tap <b>Create image</b>.")+'</div></div>';return;}
+        const list=history.filter(passesFilter);
+        if(!list.length){galleryEl.innerHTML='<div class="empty"><div class="big">'+(filterMode==="fav"?"⭐":(filterMode==="good"?"👍":(filterMode==="bad"?"👎":(activeCollection?"📁":"🎨"))))+'</div><div>'+(activeCollection?"No images in this collection yet. Open an image and tap <b>＋ Collection</b>.":"Your creations will appear here.<br/>Describe something and tap <b>Create image</b>.")+'</div></div>';return;}
         galleryEl.innerHTML=list.map((item,i)=>{
           const ref=(item.inputs&&item.inputs.length)?'<span class="ref">'+item.inputs.length+' img</span>':"";
           const fav=favs.has(item.src)?'<span class="fav">★</span>':"";
@@ -647,30 +768,60 @@
             '<div class="cap">'+esc(item.prompt.length>44?item.prompt.slice(0,44)+"…":item.prompt)+'<small>tap to view</small></div></div>';
         }).join("");
       }
-
       galleryEl.addEventListener("click",e=>{const s=e.target.closest(".shot");if(!s)return;openLightbox(Number(s.dataset.i));});
-      favFilterBtn.addEventListener("click",()=>{favOnly=!favOnly;favFilterBtn.classList.toggle("on",favOnly);renderGallery();toast(favOnly?"Showing favorites only":"Showing all images","ok");});
+      function setFilter(m){filterMode=m;[filterAll,filterFav,filterGood,filterBad].forEach(b=>b.classList.toggle("on",b.id==="filter"+m[0].toUpperCase()+m.slice(1)));renderGallery();}
+      filterAll.addEventListener("click",()=>setFilter("all"));
+      filterFav.addEventListener("click",()=>setFilter("fav"));
+      filterGood.addEventListener("click",()=>setFilter("good"));
+      filterBad.addEventListener("click",()=>setFilter("bad"));
       let cols3=false;
       viewToggle.addEventListener("click",()=>{cols3=!cols3;galleryEl.classList.toggle("cols3",cols3);galleryEl.classList.toggle("cols2",!cols3);viewToggle.textContent=cols3?"▦ Grid":"▥ List";toast(cols3?"3-column view":"2-column view","ok");});
       dlAllBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to download yet.","err");return;}history.forEach((it,idx)=>{setTimeout(()=>{const a=document.createElement("a");a.href=it.src;a.download="lumen-"+it.modelKey+"-"+Date.now()+"-"+idx+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();},idx*250);});toast("Downloading "+history.length+" images…","ok");});
 
-      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=item.modelName+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.res;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");}
+      // ---- Collections ----
+      function renderCollections(){
+        const names=Object.keys(collections);
+        colList.innerHTML = names.length?names.map(n=>'<div class="col-item'+(n===activeCollection?' on':'')+'"><div><div class="c-name">'+esc(n)+'</div><div class="c-count">'+collections[n].length+' image(s)</div></div><div class="c-acts"><button class="mini" data-open="'+esc(n)+'">Open</button><button class="mini" data-del="'+esc(n)+'">✕</button></div></div>').join(""):'<div class="empty"><div class="big">📁</div><div>No collections yet.</div></div>';
+      }
+      colList.addEventListener("click",e=>{const o=e.target.closest("[data-open]");const d=e.target.closest("[data-del]");if(o){activeCollection=o.dataset.open;saveCols();renderCollections();renderGallery();toast("Viewing collection: "+activeCollection,"ok");}if(d){delete collections[d.dataset.del];if(activeCollection===d.dataset.del)activeCollection="";saveCols();renderCollections();renderGallery();toast("Collection deleted","ok");}});
+      colAdd.addEventListener("click",()=>{const n=colName.value.trim();if(!n){toast("Enter a collection name","err");return;}if(collections[n]){toast("Collection already exists","err");return;}collections[n]=[];activeCollection=n;colName.value="";saveCols();renderCollections();renderGallery();toast("Collection created","ok");});
+      collectionsBtn.addEventListener("click",()=>{renderCollections();collectionsModal.classList.add("show");});
+      colClose.addEventListener("click",()=>collectionsModal.classList.remove("show"));
+      collectionsModal.addEventListener("click",e=>{if(e.target===collectionsModal)collectionsModal.classList.remove("show");});
+
+      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=item.modelName+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.res;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");closeCompare();compareBtn.style.display=item.original?"":"none";revertBtn.style.display=item.original?"":"none";}
       function updateLbButtons(){const item=history[lbIndex];if(!item)return;favBtn.classList.toggle("on",favs.has(item.src));favBtn.innerHTML=(favs.has(item.src)?"★ Favorite":"☆ Favorite");lbActions.querySelector('[data-act="good"]').classList.toggle("on",ratings[item.src]==="good");lbActions.querySelector('[data-act="bad"]').classList.toggle("on",ratings[item.src]==="bad");}
-      function closeLightbox(){lightbox.classList.remove("show");lbImg.src="";lbIndex=-1;}
+      function closeLightbox(){lightbox.classList.remove("show");lbImg.src="";lbIndex=-1;closeCompare();}
       lbClose.addEventListener("click",closeLightbox);
       lightbox.addEventListener("click",e=>{if(e.target===lightbox)closeLightbox();});
+
+      // ---- Before/After compare ----
+      let compareOn=false;
+      function openCompare(){const item=history[lbIndex];if(!item||!item.original)return;compareOn=true;cmpBefore.src=item.original;cmpAfter.src=item.src;lbImg.style.display="none";lbCompare.classList.add("show");setCompare(50);}
+      function closeCompare(){compareOn=false;lbImg.style.display="";lbCompare.classList.remove("show");}
+      function setCompare(v){const x=v/100;cmpAfter.style.clipPath="inset(0 "+(100-x)+"% 0 0)";cmpLine.style.left=(x*100)+"%";cmpHandle.style.left=(x*100)+"%";}
+      compareBtn.addEventListener("click",()=>{if(compareOn){closeCompare();compareBtn.classList.remove("on");}else{openCompare();compareBtn.classList.add("on");}});
+      let cmpDrag=false;
+      function cmpPos(e){const r=lbCompare.getBoundingClientRect();return Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100));}
+      lbCompare.addEventListener("pointerdown",e=>{cmpDrag=true;lbCompare.setPointerCapture(e.pointerId);setCompare(cmpPos(e));});
+      lbCompare.addEventListener("pointermove",e=>{if(cmpDrag)setCompare(cmpPos(e));});
+      lbCompare.addEventListener("pointerup",()=>{cmpDrag=false;});
+
+      // ---- Revert to original ----
+      revertBtn.addEventListener("click",()=>{const item=history[lbIndex];if(!item||!item.original)return;history.unshift({src:item.original,modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+" (original)",res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeLightbox();toast("Original restored as a new image","ok");});
 
       let lastTap=0;
       lbImg.addEventListener("click",()=>{const now=Date.now();if(now-lastTap<300){lbScale=lbScale===1?1.8:1;lbImg.style.transform="scale("+lbScale+")";lastTap=0;}else lastTap=now;});
 
       async function loadBase(src){try{const img=new Image();img.crossOrigin="anonymous";await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=src;});return img;}catch(e){const r=await fetch(src);const b=await r.blob();const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=URL.createObjectURL(b);});return img;}}
       async function copyImageClip(item){try{const blob=await(await fetch(item.src)).blob();await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast("Image copied to clipboard","ok");}catch(e){try{await navigator.clipboard.writeText(item.src);toast("Copied image link","ok");}catch(_){toast("Couldn't copy","err");}}}
-      async function transformItem(item,mode){try{const img=await loadBase(item.src);const w=img.naturalWidth,h=img.naturalHeight;const c=document.createElement("canvas");if(mode==="rotate"){c.width=h;c.height=w;const x=c.getContext("2d");x.translate(h/2,w/2);x.rotate(Math.PI/2);x.drawImage(img,-w/2,-h/2);}else{c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(img,0,0);}const url=c.toDataURL("image/png");history.unshift({src:url,modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+(mode==="rotate"?" (rotated)":" (flipped)"),res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();toast(mode==="rotate"?"Rotated ✨":"Flipped ✨","ok");}catch(e){toast("Couldn't transform this image.","err");}}
+      async function transformItem(item,mode){try{const img=await loadBase(item.src);const w=img.naturalWidth,h=img.naturalHeight;const c=document.createElement("canvas");if(mode==="rotate"){c.width=h;c.height=w;const x=c.getContext("2d");x.translate(h/2,w/2);x.rotate(Math.PI/2);x.drawImage(img,-w/2,-h/2);}else{c.width=w;c.height=h;const x=c.getContext("2d");x.translate(w,0);x.scale(-1,1);x.drawImage(img,0,0);}const url=c.toDataURL("image/png");history.unshift({src:url,modelKey:item.modelKey,modelName:item.modelName,badgeKey:item.badgeKey,prompt:item.prompt+(mode==="rotate"?" (rotated)":" (flipped)"),res:item.res,aspect:item.aspect,inputs:(item.inputs||[]).slice(),original:item.src,edited:true});if(history.length>24)history.pop();renderGallery();toast(mode==="rotate"?"Rotated ✨":"Flipped ✨","ok");}catch(e){toast("Couldn't transform this image.","err");}}
 
       lbActions.addEventListener("click",e=>{const b=e.target.closest(".lb-btn");if(!b)return;const act=b.dataset.act;const item=history[lbIndex];if(!item)return;
         if(act==="fav"){if(favs.has(item.src))favs.delete(item.src);else favs.add(item.src);saveFavs();updateLbButtons();renderGallery();}
         else if(act==="good"){ratings[item.src]=ratings[item.src]==="good"?undefined:"good";saveRatings();updateLbButtons();toast(ratings[item.src]==="good"?"Marked as good response":"Rating removed","ok");}
         else if(act==="bad"){ratings[item.src]=ratings[item.src]==="bad"?undefined:"bad";saveRatings();updateLbButtons();toast(ratings[item.src]==="bad"?"Marked as bad response":"Rating removed","ok");}
+        else if(act==="addcol"){if(!Object.keys(collections).length){collections["Favorites"]=[];}const cname=activeCollection||Object.keys(collections)[0];if(!collections[cname].includes(item.src)){collections[cname].push(item.src);saveCols();toast("Added to collection: "+cname,"ok");}else{toast("Already in that collection","err");}}
         else if(act==="copy"){try{navigator.clipboard.writeText(item.prompt);toast("Prompt copied","ok");}catch(_){toast("Couldn't copy","err");}}
         else if(act==="copyimg"){copyImageClip(item);}
         else if(act==="open"){window.open(item.src,"_blank","noopener");}
@@ -692,10 +843,19 @@
       infoClose.addEventListener("click",()=>infoModal.classList.remove("show"));
       infoModal.addEventListener("click",e=>{if(e.target===infoModal)infoModal.classList.remove("show");});
 
-      // ---------- EDITOR ----------
+      // ---------- EDITOR (with undo/redo) ----------
       let edIndex=-1,edMode="markup",baseImg=null,ctx=null,drawing=false,curStroke=null,cropDragging=false;
       let strokes=[],texts=[],edColor="#ffffff",edSize=8,edScale=1,pin=null,pinR=80,crop=null,edText="",edTextSize=48,edTextColor="#ffffff";
       let fv={brightness:100,contrast:100,saturation:100,grayscale:0,sepia:0,hue:0};
+      let undoStack=[],redoStack=[];
+      function snapState(){return {strokes:strokes.map(s=>({color:s.color,size:s.size,pts:s.pts.map(p=>({x:p.x,y:p.y}))})),texts:texts.map(t=>({...t})),pin:pin?{...pin}:null,crop:crop?{...crop}:null,fv:{...fv},edScale:edScale};}
+      function updateUndoBtns(){edUndo.disabled=!undoStack.length;edRedo.disabled=!redoStack.length;}
+      function pushUndo(){undoStack.push(snapState());if(undoStack.length>60)undoStack.shift();redoStack.length=0;updateUndoBtns();}
+      function restoreState(s){strokes=s.strokes;texts=s.texts;pin=s.pin;crop=s.crop;fv=s.fv;edScale=s.edScale;edRender();updateUndoBtns();}
+      function doUndo(){if(!undoStack.length)return;redoStack.push(snapState());restoreState(undoStack.pop());}
+      function doRedo(){if(!redoStack.length)return;undoStack.push(snapState());restoreState(redoStack.pop());}
+      edUndo.addEventListener("click",doUndo); edRedo.addEventListener("click",doRedo);
+
       function filterStr(){return "brightness("+(fv.brightness/100)+") contrast("+(fv.contrast/100)+") saturate("+(fv.saturation/100)+") grayscale("+(fv.grayscale/100)+") sepia("+(fv.sepia/100)+") hue-rotate("+fv.hue+"deg)";}
       function setSaveLabel(){const labels={point:"Apply AI edit",crop:"Save crop",text:"Save text",markup:"Save image",edit:"Save image",resize:"Save image"};edSave.textContent=labels[edMode]||"Save image";}
 
@@ -703,6 +863,7 @@
         const item=history[i];if(!item)return;
         edIndex=i;edMode=mode||"markup";strokes=[];texts=[];edScale=1;pin=null;pinR=80;crop=null;edText="";edTextSize=48;edTextColor="#ffffff";
         fv={brightness:100,contrast:100,saturation:100,grayscale:0,sepia:0,hue:0};edColor="#ffffff";edSize=8;
+        undoStack=[];redoStack=[];updateUndoBtns();
         try{baseImg=await loadBase(item.src);}catch(e){toast("This image can't be edited right now.","err");return;}
         const maxW=Math.min(window.innerWidth-40,720),maxH=Math.min(window.innerHeight-320,640);
         const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const s=Math.min(maxW/nw,maxH/nh,1);
@@ -723,10 +884,10 @@
 
       function getPos(e){const r=edCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)*(edCanvas.width/r.width),y:(e.clientY-r.top)*(edCanvas.height/r.height)};}
       edCanvas.addEventListener("pointerdown",e=>{
-        if(edMode==="point"){const p=getPos(e);pin={x:p.x,y:p.y,r:pinR};edRender();return;}
-        if(edMode==="crop"){const p=getPos(e);crop={x:p.x,y:p.y,w:0,h:0};cropDragging=true;edCanvas.setPointerCapture(e.pointerId);edRender();return;}
-        if(edMode==="text"){const p=getPos(e);const t=edText.trim();if(t){texts.push({text:t,x:p.x,y:p.y,size:edTextSize,color:edTextColor});edRender();}return;}
-        if(edMode!=="markup")return;drawing=true;edCanvas.setPointerCapture(e.pointerId);curStroke={color:edColor,size:edSize,pts:[getPos(e)]};drawStroke(ctx,curStroke,1,1);});
+        if(edMode==="point"){pushUndo();const p=getPos(e);pin={x:p.x,y:p.y,r:pinR};edRender();return;}
+        if(edMode==="crop"){pushUndo();const p=getPos(e);crop={x:p.x,y:p.y,w:0,h:0};cropDragging=true;edCanvas.setPointerCapture(e.pointerId);edRender();return;}
+        if(edMode==="text"){const p=getPos(e);const t=edText.trim();if(t){pushUndo();texts.push({text:t,x:p.x,y:p.y,size:edTextSize,color:edTextColor});edRender();}return;}
+        if(edMode!=="markup")return;pushUndo();drawing=true;edCanvas.setPointerCapture(e.pointerId);curStroke={color:edColor,size:edSize,pts:[getPos(e)]};drawStroke(ctx,curStroke,1,1);});
       edCanvas.addEventListener("pointermove",e=>{if(edMode==="crop"&&cropDragging){const p=getPos(e);crop.w=p.x-crop.x;crop.h=p.y-crop.y;edRender();return;}if(!drawing)return;const p=getPos(e);const prev=curStroke.pts[curStroke.pts.length-1];curStroke.pts.push(p);ctx.strokeStyle=curStroke.color;ctx.lineWidth=curStroke.size;ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(p.x,p.y);ctx.stroke();});
       edCanvas.addEventListener("pointerup",()=>{if(edMode==="crop"){cropDragging=false;if(crop)normRect(crop);}if(drawing&&curStroke){strokes.push(curStroke);}drawing=false;curStroke=null;});
 
@@ -740,11 +901,11 @@
           const cols=["#ffffff","#000000","#ff5f6d","#ffb43a","#35d08a","#7c5cff","#ff2f92","#00c2ff"];
           edControls.innerHTML='<div class="ed-row"><span class="lbl">Color</span><div class="swatches" id="sw">'+cols.map(c=>'<button class="sw'+(c===edColor?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>').join("")+'</div></div>'+
             '<div class="ed-row"><span class="lbl">Size</span><input type="range" id="edSize" min="2" max="40" value="'+edSize+'"/><span class="ed-val" id="edSizeVal">'+edSize+'</span></div>'+
-            '<div class="ed-row"><button class="ed-btn" id="edUndo">Undo</button><button class="ed-btn" id="edClear">Clear</button></div>';
+            '<div class="ed-row"><button class="ed-btn" id="edUndoIn">Undo</button><button class="ed-btn" id="edClearIn">Clear</button></div>';
           $("sw").addEventListener("click",e=>{const s=e.target.closest(".sw");if(!s)return;edColor=s.dataset.c;document.querySelectorAll("#sw .sw").forEach(x=>x.classList.toggle("on",x===s));});
           $("edSize").addEventListener("input",e=>{edSize=+e.target.value;$("edSizeVal").textContent=edSize;});
-          $("edUndo").addEventListener("click",()=>{strokes.pop();edRender();});
-          $("edClear").addEventListener("click",()=>{strokes=[];edRender();});
+          $("edUndoIn").addEventListener("click",doUndo);
+          $("edClearIn").addEventListener("click",()=>{pushUndo();strokes=[];edRender();});
         } else if(edMode==="edit"){
           edControls.innerHTML='<div class="ed-row"><span class="lbl">Brightness</span><input type="range" id="fB" min="50" max="180" value="'+fv.brightness+'"/><span class="ed-val" id="fBv">'+fv.brightness+'%</span></div>'+
             '<div class="ed-row"><span class="lbl">Contrast</span><input type="range" id="fC" min="50" max="180" value="'+fv.contrast+'"/><span class="ed-val" id="fCv">'+fv.contrast+'%</span></div>'+
@@ -753,19 +914,16 @@
             '<div class="ed-row"><span class="lbl">Sepia</span><input type="range" id="fP" min="0" max="100" value="'+fv.sepia+'"/><span class="ed-val" id="fPv">'+fv.sepia+'%</span></div>'+
             '<div class="ed-row"><span class="lbl">Hue</span><input type="range" id="fH" min="0" max="360" value="'+fv.hue+'"/><span class="ed-val" id="fHv">'+fv.hue+'°</span></div>'+
             '<div class="ed-row"><button class="ed-btn" id="fReset">Reset</button></div>';
-          $("fB").addEventListener("input",e=>{fv.brightness=+e.target.value;$("fBv").textContent=fv.brightness+"%";edRender();});
-          $("fC").addEventListener("input",e=>{fv.contrast=+e.target.value;$("fCv").textContent=fv.contrast+"%";edRender();});
-          $("fS").addEventListener("input",e=>{fv.saturation=+e.target.value;$("fSv").textContent=fv.saturation+"%";edRender();});
-          $("fG").addEventListener("input",e=>{fv.grayscale=+e.target.value;$("fGv").textContent=fv.grayscale+"%";edRender();});
-          $("fP").addEventListener("input",e=>{fv.sepia=+e.target.value;$("fPv").textContent=fv.sepia+"%";edRender();});
-          $("fH").addEventListener("input",e=>{fv.hue=+e.target.value;$("fHv").textContent=fv.hue+"°";edRender();});
-          $("fReset").addEventListener("click",()=>{fv={brightness:100,contrast:100,saturation:100,grayscale:0,sepia:0,hue:0};renderEdControls();edRender();});
+          const wire=el=>{el.addEventListener("pointerdown",pushUndo);};
+          ["fB","fC","fS","fG","fP","fH"].forEach(id=>{const el=$(id);wire(el);el.addEventListener("input",()=>{fv[mapF(id)]=+el.value;$(id+"v").textContent=el.value+(id==="fH"?"°":"%");edRender();});});
+          $("fReset").addEventListener("click",()=>{pushUndo();fv={brightness:100,contrast:100,saturation:100,grayscale:0,sepia:0,hue:0};renderEdControls();edRender();});
         } else if(edMode==="resize"){
           const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;
           edControls.innerHTML='<div class="ed-row"><span class="lbl">Scale</span><input type="range" id="rScale" min="25" max="200" value="100"/><span class="ed-val" id="rScaleVal">100%</span></div>'+
             '<div class="ed-row"><span class="lbl">Output</span><span class="ed-val" id="rOut" style="text-align:left">'+nw+" × "+nh+'</span></div>';
-          const up=()=>{edScale=+$("rScale").value/100;$("rScaleVal").textContent=Math.round(edScale*100)+"%";$("rOut").textContent=Math.round(nw*edScale)+" × "+Math.round(nh*edScale);};
-          $("rScale").addEventListener("input",up);up();
+          const r=$("rScale");r.addEventListener("pointerdown",pushUndo);
+          const up=()=>{edScale=+r.value/100;$("rScaleVal").textContent=Math.round(edScale*100)+"%";$("rOut").textContent=Math.round(nw*edScale)+" × "+Math.round(nh*edScale);};
+          r.addEventListener("input",up);up();
         } else if(edMode==="crop"){
           edControls.innerHTML='<div class="ed-row"><span class="lbl">Hint</span><span class="ed-val" style="text-align:left;min-width:0">Drag on the image to select the area to keep, then tap <b>Save crop</b>.</span></div>';
         } else if(edMode==="text"){
@@ -778,6 +936,7 @@
           $("swT").addEventListener("click",e=>{const s=e.target.closest(".sw");if(!s)return;edTextColor=s.dataset.c;document.querySelectorAll("#swT .sw").forEach(x=>x.classList.toggle("on",x===s));});
         }
       }
+      function mapF(id){return {fB:"brightness",fC:"contrast",fS:"saturation",fG:"grayscale",fP:"sepia",fH:"hue"}[id];}
       document.querySelectorAll(".ed-tab").forEach(t=>t.addEventListener("click",()=>{edMode=t.dataset.mode;document.querySelectorAll(".ed-tab").forEach(x=>x.classList.toggle("on",x===t));setSaveLabel();renderEdControls();edRender();}));
       edClose.addEventListener("click",closeEditor);
       edCancel.addEventListener("click",closeEditor);
@@ -798,10 +957,10 @@
         generate({prompt:scoped,inputs:[annotated],modelKey:item.modelKey,res:item.res,aspect:"auto",noStyle:true});
       }
 
-      function exportEdited(prefix){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const ow=Math.max(1,Math.round(nw*edScale)),oh=Math.max(1,Math.round(nh*edScale));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.filter=filterStr();octx.drawImage(baseImg,0,0,ow,oh);octx.filter="none";const sx=ow/edCanvas.width,sy=oh/edCanvas.height;strokes.forEach(s=>drawStroke(octx,s,sx,sy));out.toBlob(function(bl){if(!bl){toast("Export failed. This image may not be editable.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" ("+prefix+")",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-"+prefix+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast(prefix+" saved ✨","ok");},"image/png");}
-      function exportCrop(){if(!crop){toast("Drag to select the area to keep first.","err");return;}const r=normRect({x:crop.x,y:crop.y,w:crop.w,h:crop.h});if(r.w<8||r.h<8){toast("Selection is too small.","err");return;}const ow=Math.max(1,Math.round(r.w)),oh=Math.max(1,Math.round(r.h));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.drawImage(baseImg,r.x,r.y,ow,oh,0,0,ow,oh);out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" (cropped)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-crop-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Crop saved ✨","ok");},"image/png");}
-      function exportText(){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const out=document.createElement("canvas");out.width=nw;out.height=nh;const octx=out.getContext("2d");octx.drawImage(baseImg,0,0);texts.forEach(t=>{octx.fillStyle=t.color;octx.font="bold "+t.size+"px sans-serif";octx.textBaseline="middle";octx.fillText(t.text,t.x,t.y);});out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}const url=URL.createObjectURL(bl);const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" (text)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-text-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Text saved ✨","ok");},"image/png");}
-
+      function addEditedItem(url,prefix,orig){const baseItem=history[edIndex];history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,badgeKey:baseItem.badgeKey,prompt:baseItem.prompt+" ("+prefix+")",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),original:orig||baseItem.src,edited:true});if(history.length>24)history.pop();renderGallery();closeEditor();const a=document.createElement("a");a.href=url;a.download="lumen-"+prefix+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast(prefix+" saved ✨","ok");}
+      function exportEdited(prefix){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const ow=Math.max(1,Math.round(nw*edScale)),oh=Math.max(1,Math.round(nh*edScale));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.filter=filterStr();octx.drawImage(baseImg,0,0,ow,oh);octx.filter="none";const sx=ow/edCanvas.width,sy=oh/edCanvas.height;strokes.forEach(s=>drawStroke(octx,s,sx,sy));out.toBlob(function(bl){if(!bl){toast("Export failed. This image may not be editable.","err");return;}addEditedItem(URL.createObjectURL(bl),prefix);},"image/png");}
+      function exportCrop(){if(!crop){toast("Drag to select the area to keep first.","err");return;}const r=normRect({x:crop.x,y:crop.y,w:crop.w,h:crop.h});if(r.w<8||r.h<8){toast("Selection is too small.","err");return;}const ow=Math.max(1,Math.round(r.w)),oh=Math.max(1,Math.round(r.h));const out=document.createElement("canvas");out.width=ow;out.height=oh;const octx=out.getContext("2d");octx.drawImage(baseImg,r.x,r.y,ow,oh,0,0,ow,oh);out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}addEditedItem(URL.createObjectURL(bl),"crop");},"image/png");}
+      function exportText(){const nw=baseImg.naturalWidth,nh=baseImg.naturalHeight;const out=document.createElement("canvas");out.width=nw;out.height=nh;const octx=out.getContext("2d");octx.drawImage(baseImg,0,0);texts.forEach(t=>{octx.fillStyle=t.color;octx.font="bold "+t.size+"px sans-serif";octx.textBaseline="middle";octx.fillText(t.text,t.x,t.y);});out.toBlob(function(bl){if(!bl){toast("Export failed.","err");return;}addEditedItem(URL.createObjectURL(bl),"text");},"image/png");}
       edSave.addEventListener("click",()=>{
         if(edMode==="point"){applyPointEdit();return;}
         if(edMode==="crop"){exportCrop();return;}
@@ -813,7 +972,7 @@
       // ---------- Provider generate helpers ----------
       async function puterGen(prompt,options){const img=await puter.ai.txt2img(prompt,options);let src="";if(typeof img==="string")src=img;else if(img&&typeof img.src==="string")src=img.src;else if(img&&img.getAttribute)src=img.getAttribute("src")||"";if(!src)throw new Error("No image data returned.");if(src.startsWith("//"))src="https:"+src;return src;}
       function pollinationsUrl(prompt,w,h){return "https://image.pollinations.ai/prompt/"+encodeURIComponent(prompt)+"?width="+w+"&height="+h+"&nologo=true";}
-      async function customGen(prompt,model,w,h){if(!custom.base||!custom.key)throw new Error("Custom API needs a base URL and API key (see Settings).");const r=await fetch(custom.base.replace(/\/+$/,"")+"/images/generations",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+custom.key},body:JSON.stringify({model:model,prompt:prompt,size:w+"x"+h,n:1})});const data=await r.json();if(!r.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:"Custom API error "+r.status);const it=(data&&data.data&&data.data[0])||{};if(it.b64_json)return "data:image/png;base64,"+it.b64_json;if(it.url)return it.url;throw new Error("Custom API returned no image.");}
+      async function customGen(prompt,model,w,h,trans){if(!custom.base||!custom.key)throw new Error("Custom API needs a base URL and API key (see Settings).");const body={model:model,prompt:prompt,size:w+"x"+h,n:1};if(trans)body.background="transparent";const r=await fetch(custom.base.replace(/\/+$/,"")+"/images/generations",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+custom.key},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:"Custom API error "+r.status);const it=(data&&data.data&&data.data[0])||{};if(it.b64_json)return "data:image/png;base64,"+it.b64_json;if(it.url)return it.url;throw new Error("Custom API returned no image.");}
 
       // ---------- Generate ----------
       async function generate(cfg){if(busy)return;cfg=cfg||{};const base=(cfg.prompt!=null?cfg.prompt:promptEl.value);const prompt=cfg.noStyle?base.trim():buildPrompt(base);const mKey=cfg.modelKey||modelKey;const rKey=cfg.res||res;const a=cfg.aspect||aspect;const ins=cfg.inputs||inputImages;const count=Math.max(1,Math.min(4,cfg.count||varCount));
@@ -821,15 +980,17 @@
         if(provider==="puter"&&!connected){toast("Tap “Connect” first, then create.","err");return;}
         setBusy(true);let mi=0;statusText.textContent=STATUS_MSGS[0];const msgi=setInterval(()=>{mi=(mi+1)%STATUS_MSGS.length;statusText.textContent=STATUS_MSGS[mi];},1800);
         try{
-          const rr=RES[rKey]||RES["2K"];const dims=computeSize(rr.edge,a);const w=dims?dims.w:1024,h=dims?dims.h:1024;
+          const rr=RES[rKey]||RES["2K"];let dims;
+          if(a==="custom"){dims={w:customW,h:customH};}else{dims=computeSize(rr.edge,a);}
+          const w=dims?dims.w:1024,h=dims?dims.h:1024;
           const pName=provider==="puter"?MODELS[mKey].name:(provider==="pollinations"?"Pollinations":"Custom");
           const badgeKey=provider==="puter"?mKey:provider;
           for(let n=0;n<count;n++){
             if(n>0)statusText.textContent="Creating image "+(n+1)+" of "+count+"…";
             let src;
-            if(provider==="puter"){const options={model:MODELS[mKey].id};options.quality=rr.q;if(dims){options.width=dims.w;options.height=dims.h;}if(ins&&ins.length)options.input_images=ins.slice();src=await puterGen(prompt,options);}
+            if(provider==="puter"){const options={model:MODELS[mKey].id};options.quality=rr.q;if(dims){options.width=dims.w;options.height=dims.h;}if(transparent)options.transparent=true;if(ins&&ins.length)options.input_images=ins.slice();src=await puterGen(prompt,options);}
             else if(provider==="pollinations"){src=pollinationsUrl(prompt,w,h);}
-            else {src=await customGen(prompt,custom.model||"gpt-image-1",w,h);}
+            else {src=await customGen(prompt,custom.model||"gpt-image-1",w,h,transparent);}
             history.unshift({src,modelKey:provider==="puter"?mKey:provider,modelName:pName,badgeKey:badgeKey,prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()});
           }
           if(history.length>24)history.splice(24);
@@ -849,7 +1010,18 @@
       regenerateBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to recreate yet.","err");return;}const item=history[0];generate({prompt:item.prompt,modelKey:item.modelKey,res:item.res,aspect:item.aspect,inputs:item.inputs||[]});});
       clearGalleryBtn.addEventListener("click",()=>{if(!history.length){toast("Gallery already empty.","err");return;}history.length=0;renderGallery();toast("Gallery cleared","ok");});
 
-      renderStyles();renderHistory();renderUploads();applyProviderUI();
+      // ---- Keyboard shortcuts ----
+      document.addEventListener("keydown",e=>{
+        const mod=e.metaKey||e.ctrlKey;
+        if(editor.classList.contains("show")){
+          if(mod&&e.key.toLowerCase()==="z"&&!e.shiftKey){e.preventDefault();doUndo();return;}
+          if(mod&&e.shiftKey&&e.key.toLowerCase()==="z"){e.preventDefault();doRedo();return;}
+        }
+        if(mod&&e.key.toLowerCase()==="s"){e.preventDefault();const item=history[lbIndex>=0?lbIndex:0];if(item){const a=document.createElement("a");a.href=item.src;a.download="lumen-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Downloading…","ok");}return;}
+        if(mod&&e.key.toLowerCase()==="c"){if(lbIndex>=0&&history[lbIndex]){try{navigator.clipboard.writeText(history[lbIndex].prompt);toast("Prompt copied","ok");}catch(_){}}}
+      });
+
+      renderTpl();renderStyles();renderHistory();renderUploads();applyProviderUI();
       (async function init(){try{if(typeof puter!=="undefined"&&puter&&puter.auth&&puter.auth.isSignedIn){const s=await puter.auth.isSignedIn();setConnected(!!s);}refreshBalance();}catch(_){refreshBalance();}})();
     })();
   </script>
