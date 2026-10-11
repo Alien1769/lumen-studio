@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -13,40 +13,56 @@
 <link rel="manifest" href='data:application/manifest+json,{"name":"Lumen Studio","short_name":"Lumen","display":"standalone","start_url":".","background_color":"%230b0d12","theme_color":"%230b0d12"}' />
 <style>
   :root {
-    --bg: #0b0d12; --bg-2: #10131b;
-    --panel: rgba(255,255,255,.045); --panel-2: rgba(255,255,255,.07);
-    --stroke: rgba(255,255,255,.10); --stroke-2: rgba(255,255,255,.16);
-    --text: #eef1f7; --text-dim: #9aa2b2;
-    --sunburst: #ffb43a; --flare: #ff5f6d; --accent: #7c5cff;
-    --ok: #35d08a; --err: #ff5f6d;
-    --radius: 18px; --radius-sm: 12px;
-    --shadow: 0 20px 50px rgba(0,0,0,.45);
-    --safe-b: env(safe-area-inset-bottom, 0px);
+    --bg:#0b0d12; --bg-2:#10131b;
+    --panel:rgba(255,255,255,.045); --panel-2:rgba(255,255,255,.07);
+    --stroke:rgba(255,255,255,.10); --stroke-2:rgba(255,255,255,.16);
+    --text:#eef1f7; --text-dim:#9aa2b2;
+    --sunburst:#ffb43a; --flare:#ff5f6d; --accent:#7c5cff; --accent-2:#9d7bff;
+    --ok:#35d08a; --err:#ff5f6d;
+    --radius:20px; --radius-sm:13px;
+    --shadow:0 20px 50px rgba(0,0,0,.45);
+    --safe-b:env(safe-area-inset-bottom, 0px);
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin:0; padding:0; background:var(--bg); color:var(--text);
+  html[data-theme="light"] {
+    --bg:#f4f5fa; --bg-2:#ffffff;
+    --panel:rgba(20,25,40,.04); --panel-2:rgba(20,25,40,.06);
+    --stroke:rgba(20,25,40,.09); --stroke-2:rgba(20,25,40,.16);
+    --text:#171c2b; --text-dim:#5b6474;
+    --shadow:0 18px 40px rgba(20,25,40,.12);
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; padding:0; background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; min-height:100dvh; }
   body { background:
-      radial-gradient(1200px 700px at 85% -10%, rgba(124,92,255,.20), transparent 60%),
-      radial-gradient(900px 600px at -10% 10%, rgba(255,95,109,.14), transparent 55%),
+      radial-gradient(1100px 700px at 85% -10%, rgba(124,92,255,.16), transparent 60%),
+      radial-gradient(900px 600px at -10% 10%, rgba(255,95,109,.10), transparent 55%),
       radial-gradient(900px 700px at 50% 115%, rgba(255,180,58,.10), transparent 60%),
       var(--bg);
-    background-attachment: fixed; }
+    background-attachment:fixed; }
+  html[data-theme="light"] body { background:
+      radial-gradient(1100px 700px at 85% -10%, rgba(124,92,255,.12), transparent 60%),
+      radial-gradient(900px 600px at -10% 10%, rgba(255,95,109,.08), transparent 55%),
+      radial-gradient(900px 700px at 50% 115%, rgba(255,180,58,.08), transparent 60%),
+      var(--bg);
+    background-attachment:fixed; }
 
-  .shell { max-width:680px; margin:0 auto; padding:16px 16px calc(28px + var(--safe-b));
+  .shell { max-width:720px; margin:0 auto; padding:16px 16px calc(28px + var(--safe-b));
     display:flex; flex-direction:column; gap:16px; min-height:100dvh; }
 
   header { display:flex; align-items:center; gap:12px; padding:6px 2px 0; }
-  .brand-mark { width:44px; height:44px; flex:none; border-radius:14px;
+  .brand-mark { width:46px; height:46px; flex:none; border-radius:15px;
     background:linear-gradient(135deg,var(--accent),var(--flare));
     display:grid; place-items:center; box-shadow:0 8px 24px rgba(124,92,255,.35); }
-  .brand-mark svg { width:24px; height:24px; }
-  .brand-text h1 { font-size:18px; margin:0; font-weight:800; letter-spacing:-.02em; }
+  .brand-mark svg { width:25px; height:25px; }
+  .brand-text h1 { font-size:19px; margin:0; font-weight:800; letter-spacing:-.02em; }
   .brand-text p { margin:2px 0 0; font-size:12px; color:var(--text-dim); }
-  .free-badge { margin-left:auto; font-size:11px; font-weight:700; padding:6px 10px;
-    border-radius:999px; color:#0b0d12; background:linear-gradient(135deg,var(--sunburst),#ffd47a);
-    box-shadow:0 6px 16px rgba(255,180,58,.3); white-space:nowrap; }
+  .head-tools { margin-left:auto; display:flex; gap:8px; align-items:center; }
+  .free-badge { font-size:11px; font-weight:800; padding:6px 10px; border-radius:999px; color:#0b0d12;
+    background:linear-gradient(135deg,var(--sunburst),#ffd47a); box-shadow:0 6px 16px rgba(255,180,58,.3); white-space:nowrap; }
+  .theme-btn { width:40px; height:40px; border-radius:12px; background:var(--panel-2); border:1px solid var(--stroke-2);
+    color:var(--text); font-size:16px; cursor:pointer; display:grid; place-items:center; transition:transform .12s; }
+  .theme-btn:active { transform:scale(.92); }
 
   .connect-bar { display:flex; align-items:center; gap:12px; padding:13px 16px;
     background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(255,95,109,.12));
@@ -55,9 +71,10 @@
   .connect-bar .c-icon { font-size:22px; }
   .connect-bar .c-text { flex:1; font-size:13px; line-height:1.4; color:var(--text); }
   .connect-bar .c-text b { color:#c9b8ff; }
+  html[data-theme="light"] .connect-bar .c-text b { color:#6a4dff; }
   .connect-btn { flex:none; padding:10px 14px; border:none; border-radius:12px;
-    font-family:inherit; font-size:13px; font-weight:800; color:#0b0d12; cursor:pointer;
-    background:linear-gradient(135deg,var(--accent),#9d7bff); box-shadow:0 8px 20px rgba(124,92,255,.35); transition:transform .12s; }
+    font-family:inherit; font-size:13px; font-weight:800; color:#fff; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 8px 20px rgba(124,92,255,.35); transition:transform .12s; }
   .connect-btn:active { transform:scale(.96); }
 
   .model-toggle { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:6px;
@@ -86,12 +103,12 @@
     font-family:inherit; font-size:15px; line-height:1.5; padding:13px 14px; outline:none;
     transition:border-color .2s, box-shadow .2s; }
   textarea#prompt:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,92,255,.22); }
-  textarea#prompt::placeholder { color:#6b7280; }
-  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-  .chip { font-size:12.5px; font-weight:600; color:var(--text-dim); background:var(--panel-2);
-    border:1px solid var(--stroke); padding:7px 12px; border-radius:999px; cursor:pointer; transition:all .18s; }
-  .chip:active { transform:scale(.96); }
-  .chip:hover { color:var(--text); border-color:var(--stroke-2); }
+  textarea#prompt::placeholder { color:var(--text-dim); opacity:.8; }
+  .neg-wrap { margin-top:12px; }
+  .neg-wrap input { width:100%; background:var(--bg-2); border:1px solid var(--stroke); border-radius:var(--radius-sm);
+    color:var(--text); font-family:inherit; font-size:13px; padding:11px 13px; outline:none; }
+  .neg-wrap input:focus { border-color:var(--err); box-shadow:0 0 0 3px rgba(255,95,109,.18); }
+  .neg-wrap input::placeholder { color:var(--text-dim); opacity:.8; }
 
   .prompt-tools { display:flex; gap:8px; margin-top:12px; }
   .tool-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 10px;
@@ -144,9 +161,10 @@
   .seg button { flex:1; padding:9px 4px; font-size:12.5px; font-weight:700; background:transparent;
     color:var(--text-dim); border:none; border-radius:9px; cursor:pointer; font-family:inherit; transition:all .18s; white-space:nowrap; }
   .seg button.on { background:var(--panel-2); color:var(--text); box-shadow:inset 0 0 0 1px var(--stroke-2); }
+  .seg.res-seg button { font-size:11.5px; }
 
   .gen-area { padding:0 16px 16px; }
-  .gen-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:16px;
+  .gen-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:17px;
     border:none; border-radius:var(--radius); font-family:inherit; font-size:16px; font-weight:800;
     letter-spacing:.01em; color:#0b0d12; cursor:pointer;
     background:linear-gradient(135deg,var(--sunburst),#ffd47a);
@@ -159,6 +177,7 @@
   #status.show { display:flex; }
   .spinner { width:22px; height:22px; flex:none; border-radius:50%;
     border:3px solid rgba(255,255,255,.12); border-top-color:var(--accent); animation:spin .8s linear infinite; }
+  html[data-theme="light"] .spinner { border-color:rgba(20,25,40,.12); border-top-color:var(--accent); }
   @keyframes spin { to { transform:rotate(360deg); } }
 
   .gal-head { display:flex; align-items:center; justify-content:space-between; padding:0 2px; }
@@ -167,12 +186,14 @@
   .gal-action { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:var(--text-dim);
     background:var(--panel-2); border:1px solid var(--stroke); padding:7px 11px; border-radius:999px; cursor:pointer; font-family:inherit; transition:all .18s; }
   .gal-action:active { transform:scale(.96); }
+  .gal-action.on { color:var(--sunburst); border-color:var(--sunburst); background:rgba(255,180,58,.14); }
 
   .gallery { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   @media (min-width:560px){ .gallery { grid-template-columns:repeat(3,1fr); } }
   .shot { position:relative; background:var(--bg-2); border:1px solid var(--stroke);
-    border-radius:var(--radius-sm); overflow:hidden; aspect-ratio:1/1; cursor:pointer; }
-  .shot img { width:100%; height:100%; object-fit:cover; display:block; background:#0e1117; }
+    border-radius:var(--radius-sm); overflow:hidden; aspect-ratio:1/1; cursor:pointer; transition:transform .15s; }
+  .shot:active { transform:scale(.98); }
+  .shot img { width:100%; height:100%; object-fit:cover; display:block; background:var(--bg-2); }
   .shot .cap { position:absolute; left:0; right:0; bottom:0; padding:22px 10px 8px;
     background:linear-gradient(to top, rgba(0,0,0,.85), transparent);
     font-size:10.5px; font-weight:700; color:#fff; }
@@ -184,11 +205,11 @@
   .shot .ref { position:absolute; top:8px; right:8px; font-size:9.5px; font-weight:800; padding:4px 7px;
     border-radius:8px; color:#fff; background:rgba(124,92,255,.85); }
   .shot .fav { position:absolute; bottom:8px; right:8px; font-size:16px; text-shadow:0 1px 4px rgba(0,0,0,.8); }
-  .empty { grid-column:1/-1; text-align:center; color:var(--text-dim); padding:46px 20px; font-size:14px; }
+  .empty { grid-column:1/-1; text-align:center; color:var(--text-dim); padding:46px 20px; font-size:14px; line-height:1.6; }
   .empty .big { font-size:40px; margin-bottom:10px; opacity:.7; }
 
   #toast { position:fixed; left:50%; bottom:calc(20px + var(--safe-b)); transform:translateX(-50%) translateY(20px);
-    max-width:calc(100% - 32px); padding:12px 18px; border-radius:14px; background:#1a1f2b;
+    max-width:calc(100% - 32px); padding:12px 18px; border-radius:14px; background:var(--bg-2);
     border:1px solid var(--stroke-2); color:var(--text); font-size:13.5px; font-weight:600;
     box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:50; }
   #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -201,24 +222,24 @@
   #lightbox.show { display:flex; }
   .lb-top { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 6px; }
   .lb-top .lb-info { display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .lb-top .lb-info .t { font-size:12px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70vw; }
-  .lb-top .lb-info .s { font-size:10.5px; color:var(--text-dim); }
+  .lb-top .lb-info .t { font-size:12px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:64vw; }
+  .lb-top .lb-info .s { font-size:10.5px; color:#a9b0bf; }
   .lb-top .lb-tools { display:flex; gap:8px; align-items:center; }
-  .lb-round { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid var(--stroke-2);
+  .lb-round { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
     color:#fff; display:grid; place-items:center; cursor:pointer; font-size:16px; }
-  .lb-share { padding:10px 16px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#9d7bff);
-    color:#0b0d12; font-weight:800; font-size:13px; border:none; cursor:pointer; }
+  .lb-share { padding:10px 16px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff; font-weight:800; font-size:13px; border:none; cursor:pointer; }
   .lb-main { flex:1; display:flex; align-items:center; justify-content:center; padding:6px 16px; overflow:hidden; }
   .lb-img-wrap { max-width:100%; max-height:100%; display:flex; align-items:center; justify-content:center; }
-  .lb-img-wrap img { max-width:100%; max-height:64vh; display:block; transition:transform .25s ease; transform-origin:center; border-radius:8px; }
+  .lb-img-wrap img { max-width:100%; max-height:64vh; display:block; transition:transform .25s ease; transform-origin:center; border-radius:10px; }
   .lb-note { text-align:center; font-size:11px; color:#c9b8ff; padding:0 16px; }
-  .lb-caption { text-align:center; font-size:11px; color:var(--text-dim); padding:6px 16px 2px; }
+  .lb-caption { text-align:center; font-size:11px; color:#a9b0bf; padding:6px 16px 2px; }
   .lb-actions { display:flex; gap:8px; overflow-x:auto; padding:12px 16px calc(16px + var(--safe-b));
     -webkit-overflow-scrolling:touch; scrollbar-width:none; }
   .lb-actions::-webkit-scrollbar { display:none; }
   .lb-btn { flex:none; display:flex; align-items:center; gap:6px; padding:11px 14px; border-radius:13px;
-    font-family:inherit; font-size:13px; font-weight:700; color:var(--text); background:var(--panel-2);
-    border:1px solid var(--stroke-2); cursor:pointer; transition:transform .12s, background .15s; white-space:nowrap; }
+    font-family:inherit; font-size:13px; font-weight:700; color:#fff; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18); cursor:pointer; transition:transform .12s, background .15s; white-space:nowrap; }
   .lb-btn:active { transform:scale(.96); }
   .lb-btn.primary { color:#0b0d12; background:linear-gradient(135deg,var(--sunburst),#ffd47a); border-color:transparent; }
   .lb-btn.on { background:rgba(255,180,58,.18); border-color:var(--sunburst); color:var(--sunburst); }
@@ -227,18 +248,18 @@
   .lb-btn svg { width:15px; height:15px; }
 
   /* Editor */
-  #editor { position:fixed; inset:0; z-index:90; display:none; flex-direction:column; background:rgba(8,10,15,.98); }
+  #editor { position:fixed; inset:0; z-index:90; display:none; flex-direction:column; background:var(--bg); }
   #editor.show { display:flex; }
   .ed-head { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid var(--stroke); }
   .ed-tabs { display:flex; gap:6px; flex:1; overflow-x:auto; scrollbar-width:none; }
   .ed-tabs::-webkit-scrollbar { display:none; }
   .ed-tab { flex:1; padding:9px 6px; border-radius:11px; border:1px solid var(--stroke); background:var(--panel-2);
     color:var(--text-dim); font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap; }
-  .ed-tab.on { color:#0b0d12; background:linear-gradient(135deg,var(--accent),#9d7bff); border-color:transparent; }
-  .ed-close { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid var(--stroke-2);
-    color:#fff; font-size:18px; cursor:pointer; display:grid; place-items:center; }
+  .ed-tab.on { color:#fff; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-color:transparent; }
+  .ed-close { width:38px; height:38px; border-radius:50%; background:var(--panel-2); border:1px solid var(--stroke-2);
+    color:var(--text); font-size:18px; cursor:pointer; display:grid; place-items:center; }
   .ed-canvas-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:12px; overflow:hidden; }
-  .ed-canvas-wrap canvas { max-width:100%; max-height:100%; border-radius:8px; background:#0e1117; touch-action:none; }
+  .ed-canvas-wrap canvas { max-width:100%; max-height:100%; border-radius:10px; background:#0e1117; touch-action:none; }
   .ed-controls { padding:12px 14px; border-top:1px solid var(--stroke); display:flex; flex-direction:column; gap:12px; max-height:42vh; overflow-y:auto; }
   .ed-row { display:flex; align-items:center; gap:10px; }
   .ed-row .lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); width:80px; flex:none; }
@@ -255,13 +276,13 @@
   .ed-instr { width:100%; min-height:56px; resize:vertical; background:var(--bg-2); border:1px solid var(--stroke);
     border-radius:12px; color:var(--text); font-family:inherit; font-size:13px; padding:10px 12px; outline:none; }
   .ed-instr:focus { border-color:var(--accent); }
-  .ed-instr::placeholder { color:#6b7280; }
+  .ed-instr::placeholder { color:var(--text-dim); opacity:.8; }
 
   /* Info modal */
   #infoModal { position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
     background:rgba(6,8,12,.8); backdrop-filter:blur(6px); padding:24px; }
   #infoModal.show { display:flex; }
-  .info-card { max-width:420px; width:100%; background:#151a24; border:1px solid var(--stroke-2); border-radius:var(--radius);
+  .info-card { max-width:420px; width:100%; background:var(--bg-2); border:1px solid var(--stroke-2); border-radius:var(--radius);
     padding:22px; box-shadow:var(--shadow); }
   .info-card h3 { margin:0 0 10px; font-size:16px; }
   .info-card p { margin:0 0 12px; font-size:13px; color:var(--text-dim); line-height:1.6; }
@@ -269,8 +290,11 @@
   .info-close { width:100%; padding:12px; border:none; border-radius:12px; background:var(--panel-2); color:var(--text);
     font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; }
 
-  footer { margin-top:auto; padding-top:10px; text-align:center; font-size:11px; color:var(--text-dim); opacity:.7; line-height:1.6; }
+  footer { margin-top:auto; padding-top:10px; text-align:center; font-size:11px; color:var(--text-dim); opacity:.75; line-height:1.6; }
   footer a { color:var(--text-dim); }
+
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+  .card, .model-toggle, .connect-bar { animation:fadeIn .4s ease both; }
 </style>
 </head>
 <body>
@@ -283,7 +307,10 @@
         </svg>
       </div>
       <div class="brand-text"><h1>Lumen Studio</h1><p>Free · Unlimited · No API key</p></div>
-      <div class="free-badge">∞ FREE</div>
+      <div class="head-tools">
+        <div class="free-badge">∞ FREE</div>
+        <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
+      </div>
     </header>
 
     <div class="connect-bar" id="connectBar">
@@ -307,7 +334,8 @@
 
     <div class="card prompt-wrap">
       <div class="field-label"><span>Prompt</span><span class="count" id="count">0 / 1000</span></div>
-      <textarea id="prompt" maxlength="1000" placeholder="Describe the image you want to create... e.g. A neon cyberpunk alley at night, rain on the pavement, cinematic lighting"></textarea>
+      <textarea id="prompt" maxlength="1000" placeholder="Describe what you want to see… e.g. A neon cyberpunk alley at night, rain on the pavement, cinematic lighting"></textarea>
+      <div class="neg-wrap"><input id="negPrompt" maxlength="300" placeholder="Avoid (optional): e.g. blurry, extra fingers, watermarks" /></div>
       <div class="prompt-tools">
         <button class="tool-btn" id="surpriseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11h8"/><path d="M8 7h8"/><path d="M12 15h4"/></svg> Surprise me</button>
         <button class="tool-btn" id="clearPromptBtn" title="Clear prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg> Clear</button>
@@ -337,23 +365,23 @@
     </div>
 
     <div class="options">
-      <div class="opt-group"><span class="opt-label">Quality</span>
-        <div class="seg" id="quality"><button data-val="low">Low</button><button data-val="medium" class="on">Med</button><button data-val="high">High</button></div></div>
+      <div class="opt-group"><span class="opt-label">Resolution</span>
+        <div class="seg res-seg" id="res"><button data-val="1K">1K</button><button data-val="2K" class="on">2K</button><button data-val="4K">4K</button><button data-val="8K">8K</button></div></div>
       <div class="opt-group"><span class="opt-label">Aspect</span>
         <div class="seg" id="aspect"><button data-val="auto" class="on">Auto</button><button data-val="1:1">1:1</button><button data-val="3:4">3:4</button><button data-val="16:9">16:9</button><button data-val="9:16">9:16</button></div></div>
     </div>
 
     <div class="gen-area">
-      <button class="gen-btn" id="gen"><svg viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg><span id="genLabel">Generate Image</span></button>
+      <button class="gen-btn" id="gen"><svg viewBox="0 0 24 24" fill="none" stroke="#0b0d12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg><span id="genLabel">Create image</span></button>
     </div>
 
-    <div id="status"><div class="spinner"></div><span id="statusText">Creating your image…</span></div>
+    <div id="status"><div class="spinner"></div><span id="statusText">Painting your idea…</span></div>
 
     <div class="gal-head"><span class="g-title">Gallery</span>
-      <div class="gal-actions"><button class="gal-action" id="regenerateBtn">↻ Regenerate</button><button class="gal-action" id="clearGalleryBtn">🗑 Clear</button></div></div>
-    <div class="gallery" id="gallery"><div class="empty"><div class="big">🎨</div><div>Your generated images will appear here.</div></div></div>
+      <div class="gal-actions"><button class="gal-action" id="favFilterBtn">★ Favorites</button><button class="gal-action" id="regenerateBtn">↻ Recreate</button><button class="gal-action" id="clearGalleryBtn">🗑 Clear</button></div></div>
+    <div class="gallery" id="gallery"><div class="empty"><div class="big">🎨</div><div>Your creations will appear here.<br/>Describe something and tap <b>Create image</b>.</div></div></div>
 
-    <footer>Built with <a href="https://developer.puter.com" target="_blank" rel="noopener">Puter.js</a> · Powered by Puter<br/>The tool is free &amp; unlimited — each user covers their own AI cost.</footer>
+    <footer>Built with <a href="https://developer.puter.com" target="_blank" rel="noopener">Puter.js</a> · Powered by Puter<br/>Free &amp; unlimited — each user covers their own AI cost.</footer>
   </main>
 
   <!-- Lightbox -->
@@ -376,7 +404,8 @@
       <button class="lb-btn" data-act="fav" id="favBtn">☆ Favorite</button>
       <button class="lb-btn" data-act="good">👍 Good</button>
       <button class="lb-btn" data-act="bad">👎 Bad</button>
-      <button class="lb-btn" data-act="regen">↻ Regenerate</button>
+      <button class="lb-btn" data-act="copy">📋 Copy prompt</button>
+      <button class="lb-btn" data-act="regen">↻ Recreate</button>
       <button class="lb-btn" data-act="download">⬇ Download</button>
       <button class="lb-btn" data-act="remove">🗑 Remove</button>
       <button class="lb-btn" data-act="info">ℹ Learn more</button>
@@ -407,7 +436,7 @@
     <div class="info-card">
       <h3>About Lumen Studio</h3>
       <p>Free &amp; unlimited image generation using <b>GPT Image 2.5 Sunburst</b> and <b>GPT Image 2.5 Flare</b> via Puter.js. Each user covers their own AI cost — so the tool costs you nothing and has no rate cap.</p>
-      <p><b>🎯 Edit point</b> = tap the image, place a highlight, and describe the edit — the model changes only that area. <b>Markup</b> draws on it, <b>Edit</b> applies filters, <b>Resize</b> changes size, and <b>Favorite / Good / Bad</b> track your best results.</p>
+      <p><b>🎯 Edit point</b> = tap the image, place a highlight, and describe the edit — the model changes only that area. <b>Markup</b> draws on it, <b>Edit</b> applies filters, <b>Resize</b> changes size, and <b>Favorite / Good / Bad</b> track your best results. Use the resolution picker for 1K–8K output.</p>
       <p><a href="https://developer.puter.com" target="_blank" rel="noopener">Powered by Puter</a></p>
       <button class="info-close" id="infoClose">Got it</button>
     </div>
@@ -428,34 +457,41 @@
         {id:"port",label:"Studio Portrait",desc:"professional studio portrait, dramatic lighting, sharp focus"},{id:"fantasy",label:"Fantasy",desc:"epic fantasy, mystical, intricate detail, dramatic"}
       ];
       const SURPRISE = ["A tiny cozy bookstore inside a giant tree, warm golden light","An astronaut walking through a field of glowing flowers on an alien planet","A dragon made of stained glass flying over a cathedral at sunset","A samurai standing in a bamboo forest during heavy rain, cinematic","A floating island with waterfalls cascading into the clouds","A fox wearing a wizard hat reading a spellbook by candlelight","A cyberpunk street market at night, holographic signs, neon reflections","A lighthouse on a cliff during a thunderstorm, waves crashing","A cozy cabin in the snow with a glowing window and smoke from the chimney","A giant koi fish swimming through a sea of cherry blossoms"];
-      const MAX_PROMPT=1000, MAX_IMAGES=10, LS_HISTORY="lumen.promptHistory", LS_FAV="lumen.favs", LS_RATE="lumen.ratings", MAX_HISTORY=8;
+      const STATUS_MSGS = ["Painting your idea…","Adding the fine details…","Bringing it to life…","Almost there…","Sweeping the final touches…"];
+      const RES = { "1K":{q:"high",edge:1024}, "2K":{q:"xhigh",edge:2048}, "4K":{q:"max",edge:3840}, "8K":{q:"max",edge:7680} };
+      const MAX_PROMPT=1000, MAX_IMAGES=10, LS_HISTORY="lumen.promptHistory", LS_FAV="lumen.favs", LS_RATE="lumen.ratings", LS_THEME="lumen.theme", MAX_HISTORY=8;
 
-      let modelKey="sunburst",quality="medium",aspect="auto",busy=false,connected=false,style="none";
+      let modelKey="sunburst",res="2K",aspect="auto",busy=false,connected=false,style="none",favOnly=false;
       let inputImages=[]; const history=[];
 
       const $=id=>document.getElementById(id);
-      const promptEl=$("prompt"),countEl=$("count"),genBtn=$("gen"),genLabel=$("genLabel"),statusEl=$("status"),statusText=$("statusText"),
+      const promptEl=$("prompt"),negEl=$("negPrompt"),countEl=$("count"),genBtn=$("gen"),genLabel=$("genLabel"),statusEl=$("status"),statusText=$("statusText"),
             galleryEl=$("gallery"),toastEl=$("toast"),connectBar=$("connectBar"),connectBtn=$("connectBtn"),styleRow=$("styleRow"),
             historyCard=$("historyCard"),historyList=$("historyList"),clearHistoryBtn=$("clearHistory"),surpriseBtn=$("surpriseBtn"),
-            clearPromptBtn=$("clearPromptBtn"),regenerateBtn=$("regenerateBtn"),clearGalleryBtn=$("clearGalleryBtn"),uploadGrid=$("uploadGrid"),
+            clearPromptBtn=$("clearPromptBtn"),regenerateBtn=$("regenerateBtn"),clearGalleryBtn=$("clearGalleryBtn"),favFilterBtn=$("favFilterBtn"),uploadGrid=$("uploadGrid"),
             imgCount=$("imgCount"),addImagesBtn=$("addImages"),fileInput=$("fileInput"),lightbox=$("lightbox"),lbImg=$("lbImg"),
             lbTitle=$("lbTitle"),lbSub=$("lbSub"),lbNote=$("lbNote"),lbCaption=$("lbCaption"),lbActions=$("lbActions"),lbClose=$("lbClose"),
             lbShare=$("lbShare"),favBtn=$("favBtn"),editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),
-            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose");
+            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn");
 
       let lbIndex=-1,lbScale=1,favs=new Set(JSON.parse(localStorage.getItem(LS_FAV)||"[]")),ratings=JSON.parse(localStorage.getItem(LS_RATE)||"{}");
 
       function toast(msg,type){toastEl.textContent=msg;toastEl.className="show "+(type||"");clearTimeout(toast._t);toast._t=setTimeout(()=>toastEl.className="",3600);}
       function updateCount(){countEl.textContent=promptEl.value.length+" / "+MAX_PROMPT;}
-      function setBusy(b){busy=b;genBtn.disabled=b;genLabel.textContent=b?"Generating…":"Generate Image";statusEl.classList.toggle("show",b);}
+      function setBusy(b){busy=b;genBtn.disabled=b;genLabel.textContent=b?"Creating…":"Create image";statusEl.classList.toggle("show",b);}
       function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
       function setConnected(v){connected=v;connectBar.classList.toggle("hidden",v);}
       function saveFavs(){try{localStorage.setItem(LS_FAV,JSON.stringify([...favs]));}catch(_){}}
       function saveRatings(){try{localStorage.setItem(LS_RATE,JSON.stringify(ratings));}catch(_){}}
 
+      // Theme
+      function applyTheme(t){document.documentElement.setAttribute("data-theme",t);themeBtn.textContent=t==="dark"?"🌙":"☀️";try{localStorage.setItem(LS_THEME,t);}catch(_){}}
+      themeBtn.addEventListener("click",()=>{const cur=document.documentElement.getAttribute("data-theme")||"dark";applyTheme(cur==="dark"?"light":"dark");});
+      applyTheme(localStorage.getItem(LS_THEME)||"dark");
+
       document.querySelectorAll(".model-btn").forEach(btn=>btn.addEventListener("click",()=>{modelKey=btn.dataset.model;document.querySelectorAll(".model-btn").forEach(b=>{b.classList.toggle("active",b===btn);b.setAttribute("aria-selected",b===btn?"true":"false");});}));
       function wireSeg(id,cb){const seg=$(id);seg.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===btn));cb(btn.dataset.val);}));}
-      wireSeg("quality",v=>quality=v); wireSeg("aspect",v=>aspect=v);
+      wireSeg("res",v=>res=v); wireSeg("aspect",v=>aspect=v);
 
       function renderStyles(){styleRow.innerHTML=STYLES.map(s=>'<button class="style-chip'+(s.id===style?' on':'')+'" data-style="'+s.id+'">'+esc(s.label)+'</button>').join("");}
       styleRow.addEventListener("click",e=>{const c=e.target.closest(".style-chip");if(!c)return;style=c.dataset.style;styleRow.querySelectorAll(".style-chip").forEach(b=>b.classList.toggle("on",b===c));});
@@ -468,12 +504,12 @@
       clearHistoryBtn.addEventListener("click",()=>{savePH([]);renderHistory();toast("Prompt history cleared","ok");});
 
       surpriseBtn.addEventListener("click",()=>{const p=SURPRISE[Math.floor(Math.random()*SURPRISE.length)];promptEl.value=p;updateCount();promptEl.focus();});
-      clearPromptBtn.addEventListener("click",()=>{promptEl.value="";updateCount();promptEl.focus();});
+      clearPromptBtn.addEventListener("click",()=>{promptEl.value="";negEl.value="";updateCount();promptEl.focus();});
       $("chips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;promptEl.value=c.dataset.prompt;updateCount();promptEl.focus();});
       promptEl.addEventListener("input",updateCount);
       promptEl.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();generate();}});
       updateCount();
-      function buildPrompt(base){const s=STYLES.find(x=>x.id===style);if(s&&s.desc)return base.trim()+", "+s.desc;return base.trim();}
+      function buildPrompt(base){let p=base.trim();const s=STYLES.find(x=>x.id===style);if(s&&s.desc)p+=", "+s.desc;const neg=negEl.value.trim();if(neg)p+=". Avoid: "+neg;return p;}
 
       connectBtn.addEventListener("click",async()=>{connectBtn.disabled=true;connectBtn.textContent="Connecting…";try{if(typeof puter==="undefined"||!puter||!puter.auth)throw new Error("Puter.js not loaded yet.");await puter.auth.signIn();setConnected(true);toast("Connected! You're all set. ✨","ok");}catch(err){console.error(err);const raw=(err&&err.message)||"";if(/popup|blocked|window\.open|allow/i.test(raw))toast("Popup blocked. Enable pop-ups for this site, then tap Connect.","err");else toast("Could not connect. Tap Connect again and approve the sign-in window.","err");}finally{connectBtn.disabled=false;connectBtn.textContent="Connect";}});
 
@@ -483,20 +519,24 @@
       uploadGrid.addEventListener("click",e=>{const rm=e.target.closest(".rm");if(rm){inputImages.splice(Number(rm.dataset.i),1);renderUploads();return;}if(e.target.closest("#upAdd"))fileInput.click();});
       fileInput.addEventListener("change",async e=>{const files=Array.from(e.target.files||[]);const remaining=MAX_IMAGES-inputImages.length;if(files.length>remaining)toast("You can add up to "+MAX_IMAGES+" images. Only "+remaining+" added.","err");const toRead=files.slice(0,remaining);const ds=[];for(const f of toRead){try{ds.push(await readFileAsDataURL(f));}catch(_){}}inputImages.push(...ds);fileInput.value="";renderUploads();if(inputImages.length>=MAX_IMAGES)toast("Max "+MAX_IMAGES+" reference images reached.","ok");});
 
+      function computeSize(edge,aspect){let w=0,h=0;if(aspect==="1:1"){w=h=edge;}else if(aspect==="3:4"){w=Math.round(edge*0.75);h=edge;}else if(aspect==="16:9"){w=edge;h=Math.round(edge*9/16);}else if(aspect==="9:16"){w=Math.round(edge*9/16);h=edge;}else return null;const clamp=v=>Math.max(16,Math.min(3840,Math.round(v/16)*16));return {w:clamp(w),h:clamp(h)};}
+
       function renderGallery(){
-        if(!history.length){galleryEl.innerHTML='<div class="empty"><div class="big">🎨</div><div>Your generated images will appear here.</div></div>';return;}
-        galleryEl.innerHTML=history.map((item,i)=>{
+        const list=favOnly?history.filter(it=>favs.has(it.src)):history;
+        if(!list.length){galleryEl.innerHTML='<div class="empty"><div class="big">'+(favOnly?"⭐":"🎨")+'</div><div>'+(favOnly?"No favorites yet. Tap ★ on an image to save it.":"Your creations will appear here.<br/>Describe something and tap <b>Create image</b>.")+'</div></div>';return;}
+        galleryEl.innerHTML=list.map((item,i)=>{
           const ref=(item.inputs&&item.inputs.length)?'<span class="ref">'+item.inputs.length+' img</span>':"";
           const fav=favs.has(item.src)?'<span class="fav">★</span>':"";
-          return '<div class="shot" data-i="'+i+'"><img src="'+esc(item.src)+'" alt="Generated image" loading="lazy"/>'+
+          return '<div class="shot" data-i="'+history.indexOf(item)+'"><img src="'+esc(item.src)+'" alt="Generated image" loading="lazy"/>'+
             '<span class="badge '+item.modelKey+'">'+esc(item.modelName)+'</span>'+ref+fav+
             '<div class="cap">'+esc(item.prompt.length>44?item.prompt.slice(0,44)+"…":item.prompt)+'<small>tap to view</small></div></div>';
         }).join("");
       }
 
       galleryEl.addEventListener("click",e=>{const s=e.target.closest(".shot");if(!s)return;openLightbox(Number(s.dataset.i));});
+      favFilterBtn.addEventListener("click",()=>{favOnly=!favOnly;favFilterBtn.classList.toggle("on",favOnly);renderGallery();toast(favOnly?"Showing favorites only":"Showing all images","ok");});
 
-      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=MODELS[item.modelKey].name+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.quality;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");}
+      function openLightbox(i){const item=history[i];if(!item)return;lbIndex=i;lbScale=1;lbImg.style.transform="scale(1)";lbImg.src=item.src;lbTitle.textContent=item.prompt;lbSub.textContent=MODELS[item.modelKey].name+(item.inputs&&item.inputs.length?" · "+item.inputs.length+" ref":"")+" · "+item.res;lbNote.textContent=(item.inputs&&item.inputs.length)?"Based on "+item.inputs.length+" reference image(s)":"";lbCaption.textContent="Double-tap to zoom";updateLbButtons();lightbox.classList.add("show");}
       function updateLbButtons(){const item=history[lbIndex];if(!item)return;favBtn.classList.toggle("on",favs.has(item.src));favBtn.innerHTML=(favs.has(item.src)?"★ Favorite":"☆ Favorite");lbActions.querySelector('[data-act="good"]').classList.toggle("on",ratings[item.src]==="good");lbActions.querySelector('[data-act="bad"]').classList.toggle("on",ratings[item.src]==="bad");}
       function closeLightbox(){lightbox.classList.remove("show");lbImg.src="";lbIndex=-1;}
       lbClose.addEventListener("click",closeLightbox);
@@ -509,9 +549,10 @@
         if(act==="fav"){if(favs.has(item.src))favs.delete(item.src);else favs.add(item.src);saveFavs();updateLbButtons();renderGallery();}
         else if(act==="good"){ratings[item.src]=ratings[item.src]==="good"?undefined:"good";saveRatings();updateLbButtons();toast(ratings[item.src]==="good"?"Marked as good response":"Rating removed","ok");}
         else if(act==="bad"){ratings[item.src]=ratings[item.src]==="bad"?undefined:"bad";saveRatings();updateLbButtons();toast(ratings[item.src]==="bad"?"Marked as bad response":"Rating removed","ok");}
+        else if(act==="copy"){try{navigator.clipboard.writeText(item.prompt);toast("Prompt copied","ok");}catch(_){toast("Couldn't copy","err");}}
         else if(act==="download"){const a=document.createElement("a");a.href=item.src;a.download="lumen-"+item.modelKey+"-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("Downloading image…","ok");}
         else if(act==="share"){shareImage(item);}
-        else if(act==="regen"){closeLightbox();generate({prompt:item.prompt,modelKey:item.modelKey,quality:item.quality,aspect:item.aspect,inputs:item.inputs||[]});}
+        else if(act==="regen"){closeLightbox();generate({prompt:item.prompt,modelKey:item.modelKey,res:item.res,aspect:item.aspect,inputs:item.inputs||[]});}
         else if(act==="remove"){history.splice(lbIndex,1);closeLightbox();renderGallery();toast("Image removed","ok");}
         else if(act==="info"){infoModal.classList.add("show");}
         else if(act==="point"){openEditor(lbIndex,"point");}
@@ -616,7 +657,7 @@
         const item=history[edIndex];
         const scoped="Only edit the area highlighted by the magenta circle on this image. Do not modify anything outside the highlighted circle. "+instr;
         closeEditor();
-        generate({prompt:scoped,inputs:[annotated],modelKey:item.modelKey,quality:item.quality,aspect:"auto",noStyle:true});
+        generate({prompt:scoped,inputs:[annotated],modelKey:item.modelKey,res:item.res,aspect:"auto",noStyle:true});
       }
 
       edSave.addEventListener("click",()=>{
@@ -632,7 +673,7 @@
             if(!bl){toast("Export failed. This image may not be editable.","err");return;}
             const url=URL.createObjectURL(bl);
             const baseItem=history[edIndex];
-            history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,prompt:baseItem.prompt+" (edited)",quality:baseItem.quality,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});
+            history.unshift({src:url,modelKey:baseItem.modelKey,modelName:baseItem.modelName,prompt:baseItem.prompt+" (edited)",res:baseItem.res,aspect:baseItem.aspect,inputs:(baseItem.inputs||[]).slice(),edited:true});
             if(history.length>24)history.pop();
             renderGallery();closeEditor();
             const a=document.createElement("a");a.href=url;a.download="lumen-edited-"+Date.now()+".png";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
@@ -642,16 +683,16 @@
       });
 
       // ---------- Generate ----------
-      async function generate(cfg){if(busy)return;cfg=cfg||{};const base=(cfg.prompt!=null?cfg.prompt:promptEl.value);const prompt=cfg.noStyle?base.trim():buildPrompt(base);const mKey=cfg.modelKey||modelKey;const q=cfg.quality||quality;const a=cfg.aspect||aspect;const ins=cfg.inputs||inputImages;
+      async function generate(cfg){if(busy)return;cfg=cfg||{};const base=(cfg.prompt!=null?cfg.prompt:promptEl.value);const prompt=cfg.noStyle?base.trim():buildPrompt(base);const mKey=cfg.modelKey||modelKey;const rKey=cfg.res||res;const a=cfg.aspect||aspect;const ins=cfg.inputs||inputImages;
         if(!base.trim()){toast("Please describe what you want to create.","err");promptEl.focus();return;}
-        if(!connected){toast("Tap “Connect” first, then generate.","err");return;}
-        setBusy(true);statusText.textContent="Creating your image with "+MODELS[mKey].name+"…";
-        try{const options={model:MODELS[mKey].id};if(q)options.quality=q;if(a&&a!=="auto")options.aspect_ratio=a;if(ins&&ins.length)options.input_images=ins.slice();
+        if(!connected){toast("Tap “Connect” first, then create.","err");return;}
+        setBusy(true);let mi=0;statusText.textContent=STATUS_MSGS[0];const msgi=setInterval(()=>{mi=(mi+1)%STATUS_MSGS.length;statusText.textContent=STATUS_MSGS[mi];},1800);
+        try{const rr=RES[rKey]||RES["2K"];const options={model:MODELS[mKey].id};options.quality=rr.q;const dims=computeSize(rr.edge,a);if(dims){options.width=dims.w;options.height=dims.h;}if(ins&&ins.length)options.input_images=ins.slice();
           const img=await puter.ai.txt2img(prompt,options);
           let src="";if(typeof img==="string")src=img;else if(img&&typeof img.src==="string")src=img.src;else if(img&&img.getAttribute)src=img.getAttribute("src")||"";
           if(!src)throw new Error("No image data returned. Try a different prompt or model.");
           if(src.startsWith("//"))src="https:"+src;
-          history.unshift({src,modelKey:mKey,modelName:MODELS[mKey].name,prompt,quality:q,aspect:a,inputs:(ins||[]).slice()});
+          history.unshift({src,modelKey:mKey,modelName:MODELS[mKey].name,prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()});
           if(history.length>24)history.pop();renderGallery();pushHistory(base.trim());toast("Image created ✨","ok");
         }catch(err){console.error(err);let msg="Something went wrong. Please try again.";const raw=(err&&err.message)||"";
           if(/sign in|authenticate|login|permission|account/i.test(raw))msg="Please connect your Puter account. Tap Connect, then approve the sign-in window.";
@@ -659,10 +700,10 @@
           else if(/moderation|flagged|content|safety/i.test(raw))msg="The model's content filter rejected this prompt/image. Try rephrasing it.";
           else if(/bad_request|invalid|400/i.test(raw))msg="That combination wasn't accepted (e.g. too many reference images). Try fewer images or a different setting.";
           else if(raw)msg=raw;toast(msg,"err");
-        }finally{setBusy(false);}}
+        }finally{clearInterval(msgi);setBusy(false);}}
 
       genBtn.addEventListener("click",()=>generate());
-      regenerateBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to regenerate yet.","err");return;}const item=history[0];generate({prompt:item.prompt,modelKey:item.modelKey,quality:item.quality,aspect:item.aspect,inputs:item.inputs||[]});});
+      regenerateBtn.addEventListener("click",()=>{if(!history.length){toast("Nothing to recreate yet.","err");return;}const item=history[0];generate({prompt:item.prompt,modelKey:item.modelKey,res:item.res,aspect:item.aspect,inputs:item.inputs||[]});});
       clearGalleryBtn.addEventListener("click",()=>{if(!history.length){toast("Gallery already empty.","err");return;}history.length=0;renderGallery();toast("Gallery cleared","ok");});
 
       renderStyles();renderHistory();renderUploads();
