@@ -81,7 +81,6 @@
   .connect-bar { display:flex; align-items:center; gap:12px; padding:13px 16px;
     background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(255,95,109,.12));
     border:1px solid rgba(124,92,255,.35); border-radius:var(--radius); box-shadow:var(--shadow); }
-  .connect-bar.hidden { display:none; }
   .connect-bar .c-icon { font-size:22px; }
   .connect-bar .c-text { flex:1; font-size:13px; line-height:1.4; color:var(--text); }
   .connect-bar .c-text b { color:#c9b8ff; }
@@ -332,7 +331,7 @@
       <div class="brand-text"><h1>Lumen Studio</h1><p>Free · Unlimited · No API key</p></div>
       <div class="head-tools">
         <div class="free-badge">∞ FREE</div>
-        <div class="bal-badge" id="balanceEl" style="display:none" title="Remaining Puter balance — tap to earn Pollen">💳 –</div>
+        <div class="bal-badge" id="balanceEl" style="display:none" title="Remaining Puter balance — tap to open dashboard">💳 –</div>
         <div class="prov-badge" id="provBadge">Puter</div>
         <button class="icon-btn2" id="settingsBtn" title="Settings">⚙️</button>
         <button class="icon-btn2" id="themeBtn" title="Toggle theme">🌙</button>
@@ -349,7 +348,7 @@
 
     <div class="connect-bar" id="connectBar">
       <span class="c-icon">🔑</span>
-      <span class="c-text"><b>One-time connect</b><br/>Link a free Puter account so the tool stays free &amp; unlimited.</span>
+      <span class="c-text" id="connectText"><b>One-time connect</b><br/>Link a free Puter account so the tool stays free &amp; unlimited.</span>
       <button class="connect-btn" id="connectBtn">Connect</button>
     </div>
 
@@ -533,7 +532,7 @@
 
       const $=id=>document.getElementById(id);
       const promptEl=$("prompt"),negEl=$("negPrompt"),countEl=$("count"),genBtn=$("gen"),genLabel=$("genLabel"),statusEl=$("status"),statusText=$("statusText"),
-            galleryEl=$("gallery"),toastEl=$("toast"),connectBar=$("connectBar"),connectBtn=$("connectBtn"),styleRow=$("styleRow"),
+            galleryEl=$("gallery"),toastEl=$("toast"),connectBar=$("connectBar"),connectBtn=$("connectBtn"),connectText=$("connectText"),styleRow=$("styleRow"),
             historyCard=$("historyCard"),historyList=$("historyList"),clearHistoryBtn=$("clearHistory"),surpriseBtn=$("surpriseBtn"),
             clearPromptBtn=$("clearPromptBtn"),regenerateBtn=$("regenerateBtn"),clearGalleryBtn=$("clearGalleryBtn"),favFilterBtn=$("favFilterBtn"),viewToggle=$("viewToggle"),dlAllBtn=$("dlAllBtn"),uploadGrid=$("uploadGrid"),
             imgCount=$("imgCount"),addImagesBtn=$("addImages"),fileInput=$("fileInput"),lightbox=$("lightbox"),lbImg=$("lbImg"),
@@ -547,7 +546,11 @@
       function updateCount(){countEl.textContent=promptEl.value.length+" / "+MAX_PROMPT;}
       function setBusy(b){busy=b;genBtn.disabled=b;genLabel.textContent=b?"Creating…":"Create image";statusEl.classList.toggle("show",b);}
       function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
-      function setConnected(v){connected=v;connectBar.classList.toggle("hidden",v);}
+      function setConnected(v){
+        connected=v;
+        if(connectBtn) connectBtn.textContent = v ? "✓ Connected" : "Connect";
+        if(connectText) connectText.innerHTML = v ? "<b>Connected to Puter</b><br/>Your account is linked. Tap the button to open your dashboard &amp; earn Pollen." : "<b>One-time connect</b><br/>Link a free Puter account so the tool stays free &amp; unlimited.";
+      }
       function saveFavs(){try{localStorage.setItem(LS_FAV,JSON.stringify([...favs]));}catch(_){}}
       function saveRatings(){try{localStorage.setItem(LS_RATE,JSON.stringify(ratings));}catch(_){}}
 
@@ -572,7 +575,7 @@
       settingsModal.addEventListener("click",e=>{if(e.target===settingsModal)settingsModal.classList.remove("show");});
 
       // ---- Live balance + low-balance warning ----
-      function openPuter(){window.open("https://puter.com","_blank","noopener");}
+      function openPuter(){window.open("https://puter.com/dashboard","_blank","noopener");}
       balanceEl.addEventListener("click",openPuter);
       lowEarn.addEventListener("click",openPuter);
       lowDismiss.addEventListener("click",()=>{lowBanner.classList.add("hidden");});
@@ -617,7 +620,13 @@
       updateCount();
       function buildPrompt(base){let p=base.trim();const s=STYLES.find(x=>x.id===style);if(s&&s.desc)p+=", "+s.desc;const neg=negEl.value.trim();if(neg)p+=". Avoid: "+neg;return p;}
 
-      connectBtn.addEventListener("click",async()=>{connectBtn.disabled=true;connectBtn.textContent="Connecting…";try{if(typeof puter==="undefined"||!puter||!puter.auth)throw new Error("Puter.js not loaded yet.");await puter.auth.signIn();setConnected(true);toast("Connected! You're all set. ✨","ok");refreshBalance();}catch(err){console.error(err);const raw=(err&&err.message)||"";if(/popup|blocked|window\.open|allow/i.test(raw))toast("Popup blocked. Enable pop-ups for this site, then tap Connect.","err");else toast("Could not connect. Tap Connect again and approve the sign-in window.","err");}finally{connectBtn.disabled=false;connectBtn.textContent="Connect";}});
+      connectBtn.addEventListener("click",async()=>{
+        if(connected){openPuter();return;}
+        connectBtn.disabled=true;connectBtn.textContent="Connecting…";
+        try{if(typeof puter==="undefined"||!puter||!puter.auth)throw new Error("Puter.js not loaded yet.");await puter.auth.signIn();setConnected(true);toast("Connected! You're all set. ✨","ok");refreshBalance();}
+        catch(err){console.error(err);const raw=(err&&err.message)||"";if(/popup|blocked|window\.open|allow/i.test(raw))toast("Popup blocked. Enable pop-ups for this site, then tap Connect.","err");else toast("Could not connect. Tap Connect again and approve the sign-in window.","err");}
+        finally{connectBtn.disabled=false;}
+      });
 
       function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(file);});}
       function renderUploads(){imgCount.textContent=inputImages.length+" / "+MAX_IMAGES;let h=inputImages.map((s,i)=>'<div class="up-tile"><img src="'+esc(s)+'" alt="reference"/><button class="rm" data-i="'+i+'" aria-label="Remove">✕</button></div>').join("");if(inputImages.length<MAX_IMAGES)h+='<button class="up-add" id="upAdd"><span>＋</span>Add</button>';uploadGrid.innerHTML=h;}
