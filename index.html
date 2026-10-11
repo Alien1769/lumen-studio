@@ -57,7 +57,7 @@
   .brand-mark svg { width:25px; height:25px; }
   .brand-text h1 { font-size:19px; margin:0; font-weight:800; letter-spacing:-.02em; }
   .brand-text p { margin:2px 0 0; font-size:12px; color:var(--text-dim); }
-  .head-tools { margin-left:auto; display:flex; gap:8px; align-items:center; }
+  .head-tools { margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
   .free-badge { font-size:11px; font-weight:800; padding:6px 10px; border-radius:999px; color:#0b0d12;
     background:linear-gradient(135deg,var(--sunburst),#ffd47a); box-shadow:0 6px 16px rgba(255,180,58,.3); white-space:nowrap; }
   .icon-btn2 { width:40px; height:40px; border-radius:12px; background:var(--panel-2); border:1px solid var(--stroke-2);
@@ -65,6 +65,10 @@
   .icon-btn2:active { transform:scale(.92); }
   .prov-badge { font-size:10.5px; font-weight:800; padding:6px 10px; border-radius:999px; color:#fff;
     background:linear-gradient(135deg,var(--accent),var(--accent-2)); white-space:nowrap; }
+  .bal-badge { font-size:10.5px; font-weight:800; padding:6px 10px; border-radius:999px; white-space:nowrap;
+    color:#0b0d12; background:rgba(53,208,138,.9); }
+  .bal-badge.low { background:rgba(255,180,58,.9); }
+  .bal-badge.crit { background:rgba(255,95,109,.9); }
 
   .connect-bar { display:flex; align-items:center; gap:12px; padding:13px 16px;
     background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(255,95,109,.12));
@@ -319,6 +323,8 @@
       </div>
       <div class="brand-text"><h1>Lumen Studio</h1><p>Free · Unlimited · No API key</p></div>
       <div class="head-tools">
+        <div class="free-badge">∞ FREE</div>
+        <div class="bal-badge" id="balanceEl" style="display:none" title="Remaining Puter balance">💳 –</div>
         <div class="prov-badge" id="provBadge">Puter</div>
         <button class="icon-btn2" id="settingsBtn" title="Settings">⚙️</button>
         <button class="icon-btn2" id="themeBtn" title="Toggle theme">🌙</button>
@@ -517,7 +523,7 @@
             imgCount=$("imgCount"),addImagesBtn=$("addImages"),fileInput=$("fileInput"),lightbox=$("lightbox"),lbImg=$("lbImg"),
             lbTitle=$("lbTitle"),lbSub=$("lbSub"),lbNote=$("lbNote"),lbCaption=$("lbCaption"),lbActions=$("lbActions"),lbClose=$("lbClose"),
             lbShare=$("lbShare"),favBtn=$("favBtn"),editor=$("editor"),edCanvas=$("edCanvas"),edControls=$("edControls"),edClose=$("edClose"),
-            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle");
+            edCancel=$("edCancel"),edSave=$("edSave"),infoModal=$("infoModal"),infoClose=$("infoClose"),themeBtn=$("themeBtn"),settingsBtn=$("settingsBtn"),settingsModal=$("settingsModal"),settingsClose=$("settingsClose"),providerSeg=$("providerSeg"),customFields=$("customFields"),provBadge=$("provBadge"),modelToggle=$("modelToggle"),balanceEl=$("balanceEl");
 
       let lbIndex=-1,lbScale=1,favs=new Set(JSON.parse(localStorage.getItem(LS_FAV)||"[]")),ratings=JSON.parse(localStorage.getItem(LS_RATE)||"{}");
 
@@ -542,11 +548,28 @@
         modelToggle.style.display = provider==="puter" ? "" : "none";
         connectBar.style.display = provider==="puter" ? "" : "none";
         if(provider==="custom"){ $("custBase").value=custom.base; $("custKey").value=custom.key; $("custModel").value=custom.model; }
+        refreshBalance();
       }
       providerSeg.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;provider=b.dataset.val;try{localStorage.setItem(LS_PROV,provider);}catch(_){}applyProviderUI();});
       settingsBtn.addEventListener("click",()=>{applyProviderUI();settingsModal.classList.add("show");});
       settingsClose.addEventListener("click",()=>{if(provider==="custom"){custom.base=$("custBase").value.trim()||custom.base;custom.key=$("custKey").value.trim();custom.model=$("custModel").value.trim()||custom.model;try{localStorage.setItem(LS_CUST,JSON.stringify(custom));}catch(_){}}settingsModal.classList.remove("show");toast("Settings saved","ok");});
       settingsModal.addEventListener("click",e=>{if(e.target===settingsModal)settingsModal.classList.remove("show");});
+
+      // ---- Live balance ----
+      async function refreshBalance(){
+        if(provider!=="puter"||!connected){balanceEl.style.display="none";return;}
+        try{
+          const u=await puter.auth.getMonthlyUsage();
+          const ai=u&&u.allowanceInfo;
+          if(ai&&typeof ai.remaining==="number"){
+            const dollars=ai.remaining/1000000;
+            balanceEl.style.display="";
+            balanceEl.textContent="💳 $"+dollars.toFixed(2);
+            balanceEl.classList.toggle("crit",dollars<0.05);
+            balanceEl.classList.toggle("low",dollars>=0.05&&dollars<0.20);
+          } else {balanceEl.style.display="none";}
+        }catch(e){balanceEl.style.display="none";}
+      }
 
       document.querySelectorAll(".model-btn").forEach(btn=>btn.addEventListener("click",()=>{modelKey=btn.dataset.model;document.querySelectorAll(".model-btn").forEach(b=>{b.classList.toggle("active",b===btn);b.setAttribute("aria-selected",b===btn?"true":"false");});}));
       function wireSeg(id,cb){const seg=$(id);seg.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===btn));cb(btn.dataset.val);}));}
@@ -570,7 +593,7 @@
       updateCount();
       function buildPrompt(base){let p=base.trim();const s=STYLES.find(x=>x.id===style);if(s&&s.desc)p+=", "+s.desc;const neg=negEl.value.trim();if(neg)p+=". Avoid: "+neg;return p;}
 
-      connectBtn.addEventListener("click",async()=>{connectBtn.disabled=true;connectBtn.textContent="Connecting…";try{if(typeof puter==="undefined"||!puter||!puter.auth)throw new Error("Puter.js not loaded yet.");await puter.auth.signIn();setConnected(true);toast("Connected! You're all set. ✨","ok");}catch(err){console.error(err);const raw=(err&&err.message)||"";if(/popup|blocked|window\.open|allow/i.test(raw))toast("Popup blocked. Enable pop-ups for this site, then tap Connect.","err");else toast("Could not connect. Tap Connect again and approve the sign-in window.","err");}finally{connectBtn.disabled=false;connectBtn.textContent="Connect";}});
+      connectBtn.addEventListener("click",async()=>{connectBtn.disabled=true;connectBtn.textContent="Connecting…";try{if(typeof puter==="undefined"||!puter||!puter.auth)throw new Error("Puter.js not loaded yet.");await puter.auth.signIn();setConnected(true);toast("Connected! You're all set. ✨","ok");refreshBalance();}catch(err){console.error(err);const raw=(err&&err.message)||"";if(/popup|blocked|window\.open|allow/i.test(raw))toast("Popup blocked. Enable pop-ups for this site, then tap Connect.","err");else toast("Could not connect. Tap Connect again and approve the sign-in window.","err");}finally{connectBtn.disabled=false;connectBtn.textContent="Connect";}});
 
       function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(file);});}
       function renderUploads(){imgCount.textContent=inputImages.length+" / "+MAX_IMAGES;let h=inputImages.map((s,i)=>'<div class="up-tile"><img src="'+esc(s)+'" alt="reference"/><button class="rm" data-i="'+i+'" aria-label="Remove">✕</button></div>').join("");if(inputImages.length<MAX_IMAGES)h+='<button class="up-add" id="upAdd"><span>＋</span>Add</button>';uploadGrid.innerHTML=h;}
@@ -777,14 +800,16 @@
             history.unshift({src,modelKey:provider==="puter"?mKey:provider,modelName:pName,badgeKey:badgeKey,prompt,res:rKey,aspect:a,inputs:(ins||[]).slice()});
           }
           if(history.length>24)history.splice(24);
-          renderGallery();pushHistory(base.trim());toast(count>1?count+" images created ✨":"Image created ✨","ok");
+          renderGallery();pushHistory(base.trim());toast(count>1?count+" images created ✨":"Image created ✨","ok");refreshBalance();
         }catch(err){console.error(err);let msg="Something went wrong. Please try again.";const raw=(err&&err.message)||"";
-          if(/sign in|authenticate|login|permission|account/i.test(raw))msg="Please connect your Puter account. Tap Connect, then approve the sign-in window.";
-          else if(/popup|blocked|window\.open/i.test(raw))msg="A popup was blocked. Allow pop-ups for this site, then try again.";
-          else if(/moderation|flagged|content|safety/i.test(raw))msg="The model's content filter rejected this prompt/image. Try rephrasing it.";
-          else if(/bad_request|invalid|400/i.test(raw))msg="That combination wasn't accepted (e.g. too many reference images). Try fewer images or a different setting.";
-          else if(/api key|base url|401|403|404/i.test(raw))msg="Custom API error: "+raw;
-          else if(raw)msg=raw;toast(msg,"err");
+          if(/insufficient_funds|low balance|not enough funding|balance|402/i.test(raw)){msg="Your Puter account balance is too low. Try: lower the Resolution (1K), set Variations to 1, earn free Pollen in your Puter account, or switch to the free Pollinations provider in ⚙️ Settings.";}
+          else if(/sign in|authenticate|login|permission|account/i.test(raw)){msg="Please connect your Puter account. Tap Connect, then approve the sign-in window.";}
+          else if(/popup|blocked|window\.open/i.test(raw)){msg="A popup was blocked. Allow pop-ups for this site, then try again.";}
+          else if(/moderation|flagged|content|safety/i.test(raw)){msg="The model's content filter rejected this prompt/image. Try rephrasing it.";}
+          else if(/bad_request|invalid|400/i.test(raw)){msg="That combination wasn't accepted (e.g. too many reference images). Try fewer images or a different setting.";}
+          else if(/api key|base url|401|403|404/i.test(raw)){msg="Custom API error: "+raw;}
+          else if(raw){msg=raw;}
+          toast(msg,"err");
         }finally{clearInterval(msgi);setBusy(false);}}
 
       genBtn.addEventListener("click",()=>generate());
@@ -792,7 +817,7 @@
       clearGalleryBtn.addEventListener("click",()=>{if(!history.length){toast("Gallery already empty.","err");return;}history.length=0;renderGallery();toast("Gallery cleared","ok");});
 
       renderStyles();renderHistory();renderUploads();applyProviderUI();
-      (async function init(){try{if(typeof puter!=="undefined"&&puter&&puter.auth&&puter.auth.isSignedIn){const s=await puter.auth.isSignedIn();setConnected(!!s);}}catch(_){}})();
+      (async function init(){try{if(typeof puter!=="undefined"&&puter&&puter.auth&&puter.auth.isSignedIn){const s=await puter.auth.isSignedIn();setConnected(!!s);}refreshBalance();}catch(_){refreshBalance();}})();
     })();
   </script>
 </body>
